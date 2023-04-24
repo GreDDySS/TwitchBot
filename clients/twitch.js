@@ -117,7 +117,7 @@ const handleUserMessage = async (msg) => {
         channelMeta: channelMeta,
         userState: msg.ircTags,
     };
-    
+
     
     if (msg.senderUsername === greddBot.Config.username && channelMeta) {
         const currentMode = channelMeta.map((item) => { return item.mode})
@@ -134,33 +134,39 @@ const handleUserMessage = async (msg) => {
             }
         }
     }
-
+    
     // Ignore any message from self
     if(msg.senderUsername == greddBot.Config.username) {
         return
     }
-
+    
     const isIgnore = channelMeta.map((item) => { return item.ignore})
     if( isIgnore === true) {
         return
     }
-
+    const chat = greddBot.Utils.command  
     if (msg.messageText.startsWith(greddBot.Config.prefix)) {
         let cmd = commandString.toLowerCase()
         let channel = commandData.channel
-        let cmdF = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd))
+        var cmdF = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd))
         if (!cmdF || cmdF.cooldown_users.includes(commandData.user.id)) return
-            if (cmdF.config.adminOnly && !(commandData.user.name == greddBot.Config.owner)) return;
-            try {
-                cmdF.run(client, channel, commandData)
-                // TODO: + cmd use channel
-                greddBot.Utils.temp.cmdCount++
-                setUserCooldown(cmdF, commandData)
-            } catch (err) {
-                greddBot.Utils.misc.logError("Commands", err.message, err.stack || "")
-                greddBot.Logger.error(`${pc.red("[ERROR]")} || Error occurred when running the command ` + `${err}`)
-            }
+        
+        // check command active
+        if (cmdF.config.active == false) {
+            return
         }
-}
 
-module.exports = {initialize}
+        if (cmdF.config.adminOnly && !(commandData.user.name == greddBot.Config.owner)) return;
+        try {
+            cmdF.run(client, chat, channel, commandData)
+            // TODO: + cmd use channel
+            greddBot.Utils.temp.cmdCount++
+            setUserCooldown(cmdF, commandData)
+        } catch (err) {
+            greddBot.Utils.misc.logError("Commands", err.message, err.stack || "")
+            greddBot.Logger.error(`${pc.red("[ERROR]")} || Error occurred when running the command ` + `${err}`)
+        }
+    }
+    module.exports = {commandData, cmdF}
+}
+module.exports = {client, initialize}
