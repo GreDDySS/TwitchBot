@@ -1,0 +1,41 @@
+const pc = require("picocolors");
+const fs = require("fs");
+const utils = require("util")
+
+
+global.greddBot = {}
+
+greddBot.Config = require("./utils/Config")
+greddBot.Logger = require("./utils/Winstone")
+greddBot.DB = {db} = require('./utils/Database')
+greddBot.Utils = {
+    misc: require("./utils/Misc"),
+    APITwitch: require("./utils/APITwitch"),
+    ApiClient: require("./utils/APIClients"),
+    temp: {cmdCount: 0}
+}
+greddBot.Channel = require("./modules/channel")
+greddBot.Twitch = {initialize} = require("./clients/twitch")
+
+// Initializing
+async function start() {
+    try {
+        greddBot.Logger
+        greddBot.DB.start()
+        greddBot.Twitch.initialize()
+    } catch (e) {
+        greddBot.Logger.error(`Error encountered during initialization: ${e}`);
+    }
+};
+start();
+
+process
+.on('unhandledRejection', async (reason, promise) => {
+    greddBot.Utils.misc.logError("UnhandledRejection", utils.inspect(promise), utils.inspect(reason))
+    return greddBot.Logger.error(`${pc.red('[UnhandledRejection]')} || ${reason}`);
+})
+.on('uncaughtException', async (err) => {
+    greddBot.Utils.misc.logError("UnhandledRejection", err.message, err.stack || "")
+    greddBot.Logger.error(`${pc.red('[UncaughtException]')} || ${err.message}`);
+    return process.exit(0);
+});
