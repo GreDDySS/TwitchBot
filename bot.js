@@ -12,6 +12,7 @@ greddBot.Utils = {
     misc: require("./utils/Misc"),
     APITwitch: require("./utils/APITwitch"),
     ApiClient: require("./utils/APIClients"),
+    command: require("./modules/command"),
     temp: {cmdCount: 0}
 }
 greddBot.Channel = require("./modules/channel")
