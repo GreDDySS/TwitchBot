@@ -2,6 +2,17 @@ const {AlternateMessageModifier, SlowModeRateLimiter, ChatClient, LoginError, Jo
 const pc = require("picocolors")
 const fs = require("fs")
 
+var stats = {
+    message: {
+        messageCount: 0,
+        lastMessageTime: Date.now()
+    },
+    command: {
+        cmdCount: 0,
+        lastCmdUseTime: Date.now()
+    }
+}
+
 const client = new ChatClient({
     username: greddBot.Config.username,
     password: greddBot.Config.password,
@@ -57,7 +68,7 @@ async function initialize()  {
 
 client.on("ready", async ()=> {
     greddBot.Logger.info(`${pc.green("[TWITCH]")} || Connected to Twitch 🟢`)
-    await client.say("greddyss", `New version ${greddBot.Utils.misc.randomConnectEmote()}`)
+    await client.say("greddyss", `New ${greddBot.Utils.misc.randomConnectEmote()}`)
 })
 
 client.on("error", (error) => {
@@ -86,9 +97,11 @@ client.on("CLEARCHAT", async (msg) => {
     }
 })
 
+
 client.on("PRIVMSG", (msg) => handleUserMessage(msg))
 
 const handleUserMessage = async (msg) => {
+    const botID = ["887673977", "555579413", "68136884", "100135110", "725333641"]
     const type = "privmsg"
     const message = msg.messageText
     const content = message.split(/\s+/g)
@@ -139,6 +152,19 @@ const handleUserMessage = async (msg) => {
     if(msg.senderUsername == greddBot.Config.username) {
         return
     }
+
+    // Ingore bots messages
+    if(msg.senderUserID == botID) {
+        return
+    }
+
+    // Funny
+    if (msg.channelID == "191400264"){
+        if(msg.messageText == "Alright") {
+            client.say(commandData.channel, "Alright")
+        }
+    }
+
     
     const isIgnore = channelMeta.map((item) => { return item.ignore})
     if( isIgnore === true) {
@@ -146,6 +172,7 @@ const handleUserMessage = async (msg) => {
     }
     const chat = greddBot.Utils.command  
     if (msg.messageText.startsWith(greddBot.Config.prefix)) {
+        logCmds()
         let cmd = commandString.toLowerCase()
         let channel = commandData.channel
         var cmdF = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd))
@@ -155,17 +182,55 @@ const handleUserMessage = async (msg) => {
         if (cmdF.config.active == false) {
             return
         }
-
+        
         if (cmdF.config.adminOnly && !(commandData.user.name == greddBot.Config.owner)) return;
         try {
             cmdF.run(client, chat, channel, commandData)
-            // TODO: + cmd use channel
+            stats.command.cmdCount++
+            stats.command.lastCmdUseTime = Date.now()
             greddBot.Utils.temp.cmdCount++
             setUserCooldown(cmdF, commandData)
         } catch (err) {
             greddBot.Utils.misc.logError("Commands", err.message, err.stack || "")
             greddBot.Logger.error(`${pc.red("[ERROR]")} || Error occurred when running the command ` + `${err}`)
         }
+    }
+    
+    if (msg.messageText) {
+        if(msg.messageText.startsWith(greddBot.Config.prefix)) return
+        stats.message.messageCount++
+        stats.message.lastMessageTime = Date.now()
+    }
+    
+    // Logging in stats bot
+    logMessage()
+    
+    function logMessage(){
+        setTimeout(() => {
+            const timeSinceLastMessage = Date.now() - stats.message.lastMessageTime
+    
+            if (timeSinceLastMessage >= 10000){
+                if (stats.message.messageCount == 0) return
+                greddBot.Utils.stats.messageWrite(stats.message.messageCount)
+                stats.message.messageCount = 0
+                stats.message.lastMessageTime = Date.now()
+            }
+            logMessage()
+        }, 10000);
+    }
+    
+    function logCmds(){
+        setTimeout(() => {
+            const timeSinceLastCmdUse = Date.now() - stats.command.lastCmdUseTime
+    
+            if (timeSinceLastCmdUse >= 15000){
+                if (stats.command.cmdCount == 0) return
+                greddBot.Utils.stats.cmdUsed(stats.command.cmdCount)
+                stats.command.cmdCount = 0
+                stats.command.lastCmdUseTime = Date.now()
+            }
+            logCmds()
+        }, 15000)
     }
     module.exports = {commandData, cmdF}
 }
