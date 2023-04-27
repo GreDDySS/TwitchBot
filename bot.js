@@ -13,8 +13,19 @@ greddBot.Utils = {
     APITwitch: require("./utils/APITwitch"),
     ApiClient: require("./utils/APIClients"),
     command: require("./modules/command"),
-    stats: require("./utils/stats"),
+    stats: require("./utils/StatsUpdate"),
     temp: {cmdCount: 0},
+}
+greddBot.Stats = {
+    log: require("./modules/logStats"),
+    message: {
+        messageCount: 0,
+        lastMessageTime: Date.now()
+    },
+    command: {
+        cmdCount: 0,
+        lastCmdUseTime: Date.now()
+    }
 }
 greddBot.Channel = require("./modules/channel")
 greddBot.Twitch = {initialize} = require("./clients/twitch")
