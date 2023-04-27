@@ -9,7 +9,9 @@ const db = new Client({
   database: greddBot.Config.db_name
 })
 async function start() {
-    db.connect().then(() => {greddBot.Logger.info(`${pc.green("[DATABASE]")} || DataBase connect successfully 🟢`)}).catch((err) => {greddBot.Logger.error(`${pc.red("[DATABSE]")} || Error connecting to database`)})
+    db.connect().then(() => {
+      greddBot.Logger.info(`${pc.green("[DATABASE]")} || DataBase connect successfully 🟢`)})
+      .catch((err) => {greddBot.Logger.error(`${pc.red("[DATABSE]")} || Error connecting to database`)})
 }
 
 module.exports = {db, start}
