@@ -2,16 +2,6 @@ const {AlternateMessageModifier, SlowModeRateLimiter, ChatClient, LoginError, Jo
 const pc = require("picocolors")
 const fs = require("fs")
 
-var stats = {
-    message: {
-        messageCount: 0,
-        lastMessageTime: Date.now()
-    },
-    command: {
-        cmdCount: 0,
-        lastCmdUseTime: Date.now()
-    }
-}
 
 const client = new ChatClient({
     username: greddBot.Config.username,
@@ -66,10 +56,6 @@ async function initialize()  {
 }
 
 
-client.on("ready", async ()=> {
-    greddBot.Logger.info(`${pc.green("[TWITCH]")} || Connected to Twitch 🟢`)
-    await client.say("greddyss", `New ${greddBot.Utils.misc.randomConnectEmote()}`)
-})
 
 client.on("error", (error) => {
     if (error instanceof LoginError) {
@@ -82,6 +68,11 @@ client.on("error", (error) => {
         return greddBot.Logger.error(`${pc.red("[T-SAT]")} || Error sending message in: ${error.failedChannelName} : ${error.cause} | ${error.message}`)
     }
     greddBot.Logger.error(`${pc.red("[T-ERROR]")} || Error occured in DTI: ${error}`)
+})
+
+client.on("ready", async ()=> {
+    greddBot.Logger.info(`${pc.green("[TWITCH]")} || Connected to Twitch 🟢`)
+    // await client.say("greddyss", `New ${greddBot.Utils.misc.randomConnectEmote()}`)
 })
 
 client.on("CLEARCHAT", async (msg) => {
@@ -158,9 +149,13 @@ const handleUserMessage = async (msg) => {
         return
     }
 
+    // Logging stats
+    greddBot.Stats.log.logCmds()
+    greddBot.Stats.log.logMessage()
+
     // Funny
     if (msg.channelID == "191400264"){
-        if(msg.messageText == "Alright") {
+        if(message == "Alright") {
             client.say(commandData.channel, "Alright")
         }
     }
@@ -186,8 +181,8 @@ const handleUserMessage = async (msg) => {
         if (cmdF.config.adminOnly && !(commandData.user.name == greddBot.Config.owner)) return;
         try {
             cmdF.run(client, chat, channel, commandData)
-            stats.command.cmdCount++
-            stats.command.lastCmdUseTime = Date.now()
+            greddBot.Stats.command.cmdCount++
+            greddBot.Stats.command.lastCmdUseTime = Date.now()
             greddBot.Utils.temp.cmdCount++
             setUserCooldown(cmdF, commandData)
         } catch (err) {
@@ -198,40 +193,10 @@ const handleUserMessage = async (msg) => {
     
     if (msg.messageText) {
         if(msg.messageText.startsWith(greddBot.Config.prefix)) return
-        stats.message.messageCount++
-        stats.message.lastMessageTime = Date.now()
+        greddBot.Stats.message.messageCount++
+        greddBot.Stats.message.lastMessageTime = Date.now()
     }
     
-    // Logging in stats bot
-    logMessage()
-    
-    function logMessage(){
-        setTimeout(() => {
-            const timeSinceLastMessage = Date.now() - stats.message.lastMessageTime
-    
-            if (timeSinceLastMessage >= 10000){
-                if (stats.message.messageCount == 0) return
-                greddBot.Utils.stats.messageWrite(stats.message.messageCount)
-                stats.message.messageCount = 0
-                stats.message.lastMessageTime = Date.now()
-            }
-            logMessage()
-        }, 10000);
-    }
-    
-    function logCmds(){
-        setTimeout(() => {
-            const timeSinceLastCmdUse = Date.now() - stats.command.lastCmdUseTime
-    
-            if (timeSinceLastCmdUse >= 15000){
-                if (stats.command.cmdCount == 0) return
-                greddBot.Utils.stats.cmdUsed(stats.command.cmdCount)
-                stats.command.cmdCount = 0
-                stats.command.lastCmdUseTime = Date.now()
-            }
-            logCmds()
-        }, 15000)
-    }
     module.exports = {commandData, cmdF}
 }
 module.exports = {client, initialize}
