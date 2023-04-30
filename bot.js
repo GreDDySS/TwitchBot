@@ -14,6 +14,7 @@ greddBot.Utils = {
     ApiClient: require("./utils/APIClients"),
     command: require("./modules/command"),
     stats: require("./utils/StatsUpdate"),
+    celebration: require("./utils/Celebration"),
     temp: {cmdCount: 0},
 }
 greddBot.Stats = {
@@ -29,6 +30,7 @@ greddBot.Stats = {
 }
 greddBot.Channel = require("./modules/channel")
 greddBot.Twitch = {initialize} = require("./clients/twitch")
+greddBot.Telegram = require("./clients/telegram")
 
 // Initializing
 async function start() {
@@ -36,6 +38,8 @@ async function start() {
         greddBot.Logger
         greddBot.DB.start()
         greddBot.Twitch.initialize()
+        greddBot.Utils.celebration.getListCelebration()
+        greddBot.Telegram
     } catch (e) {
         greddBot.Logger.error(`Error encountered during initialization: ${e}`);
     }
