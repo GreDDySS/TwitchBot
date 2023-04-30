@@ -15,7 +15,7 @@ exports.run = async (client, chat, channel, commandData) => {
     }
 }
 module.exports.config = {
-    name: "test",
+    name: "leave",
     description: "Leave channel",
     cooldown: 666,
     aliases: [],
