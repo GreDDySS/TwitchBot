@@ -10,7 +10,7 @@ A little guide on how to get started with the bot.
 
 2. Fill in your data
 
-3. Create tables in sql. Scheme in [sql-scheme](/sql-sheme.md)
+3. Create tables in sql. Scheme in [sql-scheme](/sql-scheme.md)
 
 4. Make sure to install **npm** with these Commands:
 ```
