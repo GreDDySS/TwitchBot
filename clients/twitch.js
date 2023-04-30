@@ -121,7 +121,6 @@ const handleUserMessage = async (msg) => {
         channelMeta: channelMeta,
         userState: msg.ircTags,
     };
-
     
     if (msg.senderUsername === greddBot.Config.username && channelMeta) {
         const currentMode = channelMeta.map((item) => { return item.mode})
@@ -167,7 +166,7 @@ const handleUserMessage = async (msg) => {
     }
     const chat = greddBot.Utils.command  
     if (msg.messageText.startsWith(greddBot.Config.prefix)) {
-        logCmds()
+        greddBot.Stats.log.logCmds()
         let cmd = commandString.toLowerCase()
         let channel = commandData.channel
         var cmdF = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd))
