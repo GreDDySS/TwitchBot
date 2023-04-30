@@ -38,7 +38,6 @@ async function start() {
         greddBot.Logger
         greddBot.DB.start()
         greddBot.Twitch.initialize()
-        greddBot.Utils.celebration.getListCelebration()
         greddBot.Telegram
     } catch (e) {
         greddBot.Logger.error(`Error encountered during initialization: ${e}`);
