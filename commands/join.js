@@ -5,7 +5,7 @@ exports.run = async (client, chat, channel, commandData) => {
         if (channelName.rows.length === 0) {
             await greddBot.DB.db.query(`Insert into "channel" ("userId", "name") values ($1, $2)`, [commandData.user.id, commandData.user.login])
             await client.join(commandData.user.login)
-            chat.send(commandData.user.name, `@${commandData.user.name}, YO!`)
+            chat.send(commandData.user.login, `@${commandData.user.name}, YO!`)
             chat.send(channel, `Успешно подключился к ${commandData.user.name} FeelsOkayMan`)
         } else {
             chat.send(channel, `@${commandData.user.name}, Я уже есть на вашем канале 🤓`)
