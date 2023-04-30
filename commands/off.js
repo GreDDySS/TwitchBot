@@ -3,7 +3,7 @@ exports.run = async (client, chat, channel, commandData) => {
     process.exit()
 }
 module.exports.config = {
-    name: "test",
+    name: "off",
     description: "Off bot",
     cooldown: 5000,
     aliases: ["shutdown"],
