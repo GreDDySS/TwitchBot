@@ -8,7 +8,7 @@ module.exports.config = {
     name: "pull",
     description: "Pull the files from github",
     cooldown: 5000,
-    aliases: ["rs"],
+    aliases: [],
     active: true,
     adminOmnly: true
 }
