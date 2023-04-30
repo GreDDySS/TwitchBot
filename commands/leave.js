@@ -3,7 +3,7 @@ exports.run = async (client, chat, channel, commandData) => {
     if (commandData.user.badges.hasBroadcaster) {
         if (arg.length > 0) return
         await greddBot.DB.db.query(`Delete from channel where "userId" = '${commandData.user.id}'`)
-        client.part(commandData.user.name)
+        client.part(commandData.user.login)
     }
 
     if (commandData.user.login == greddBot.Config.owner) {
