@@ -38,4 +38,12 @@ const getSevenID = async () => {
     return result
 }
 
-module.exports = {getById, getByName, getJoinable, getListenable, getSevenID}
+const getSevenUsername = async (id) => {
+    const channels = await greddBot.DB.db.query(`Select * from channel where "sevenID" = '${id}'`)
+    const result = channels.rows.map((item) => {
+        return item.name
+    })
+    return result
+}
+
+module.exports = {getById, getByName, getJoinable, getListenable, getSevenID, getSevenUsername}
