@@ -35,4 +35,4 @@ const sendCommand = async (channel, message) => {
     await greddBot.Twitch.client.privmsg(channel, message)
 }
 
-module.exports = {send, sendError, sendError}
+module.exports = {send, sendError, sendCommand}
