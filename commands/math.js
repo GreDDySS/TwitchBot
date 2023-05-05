@@ -13,5 +13,5 @@ module.exports.config = {
     cooldown: 5000,
     aliases: [],
     active: true,
-    adminOmnly: false
+    adminOnly: false
 }
