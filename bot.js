@@ -32,6 +32,7 @@ greddBot.Channel = require("./modules/channel")
 greddBot.Twitch = {initialize} = require("./clients/twitch")
 greddBot.Telegram = require("./clients/telegram")
 greddBot.Seven = require("./clients/sevenTV")
+greddBot.Pubsub = require("./clients/pubsub")
 
 // Initializing
 async function start() {
@@ -41,6 +42,7 @@ async function start() {
         await greddBot.Twitch.initialize()
         await greddBot.Seven.initialize()
         greddBot.Telegram
+        greddBot.Pubsub
     } catch (e) {
         greddBot.Logger.error(`Error encountered during initialization: ${e}`);
     }
