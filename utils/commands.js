@@ -11,7 +11,7 @@ for (const file of FILES) {
         commandsData.push({
             name: cfg.name,
             description: cfg.description,
-            cooldown: cfg.cooldown,
+            cooldown: cfg.cooldown / 1000,
             active: cfg.active,
             admin: cfg.adminOnly
         })
