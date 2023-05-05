@@ -8,5 +8,5 @@ module.exports.config = {
     cooldown: 5000,
     aliases: ["shutdown"],
     active: true,
-    adminOmnly: true
+    adminOnly: true
 }
