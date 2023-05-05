@@ -14,5 +14,5 @@ module.exports.config = {
     cooldown: 5000,
     aliases: ["ping"],
     active: true,
-    adminOmnly: false
+    adminOnly: false
 }
