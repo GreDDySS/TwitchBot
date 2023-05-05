@@ -33,11 +33,13 @@ greddBot.Twitch = {initialize} = require("./clients/twitch")
 greddBot.Telegram = require("./clients/telegram")
 greddBot.Seven = require("./clients/sevenTV")
 greddBot.Pubsub = require("./clients/pubsub")
+greddBot.Web = require("./web/server")
 
 // Initializing
 async function start() {
     try {
         greddBot.Logger
+        greddBot.Web.keepAlive()
         await greddBot.DB.start()
         await greddBot.Twitch.initialize()
         await greddBot.Seven.initialize()
