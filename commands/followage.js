@@ -34,5 +34,5 @@ module.exports.config = {
     cooldown: 5000,
     aliases: ["followe"],
     active: true,
-    adminOmnly: false
+    adminOnly: false
 }
