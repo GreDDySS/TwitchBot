@@ -5,7 +5,9 @@
     "cheerio": "^1.0.0-rc.12",
     "child_process": "^1.0.2",
     "dotenv": "^16.0.3",
+    "ejs": "^3.1.9",
     "eventsource": "^2.0.2",
+    "express": "^4.18.2",
     "humanize-duration": "^3.28.0",
     "mathjs": "^11.8.0",
     "node-telegram-bot-api": "^0.61.0",
@@ -13,7 +15,6 @@
     "pg": "^8.10.0",
     "picocolors": "^1.0.0",
     "request-promise": "^4.2.6",
-    "tmi.js": "^1.8.5",
     "twitchps": "^1.6.0",
     "winston": "^3.8.2"
   },
