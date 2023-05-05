@@ -5,7 +5,7 @@ const chat = greddBot.Utils.command
 const pubsub = new TwitchPubSub({
     init_topics: [{topic: `video-playback.${greddBot.Config.owner}`}],
     reconnect: true,
-    debug: true
+    debug: false
 })
 
 pubsub.on('connected', () => {
