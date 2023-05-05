@@ -72,7 +72,7 @@ client.on("error", (error) => {
 
 client.on("ready", async ()=> {
     greddBot.Logger.info(`${pc.green("[TWITCH]")} || Connected to Twitch 🟢`)
-    await client.say("greddyss", `New ${greddBot.Utils.misc.randomConnectEmote()}`)
+    await client.say("greddyss", `${greddBot.Utils.misc.randomConnectEmote()}`)
 })
 
 client.on("CLEARCHAT", async (msg) => {
