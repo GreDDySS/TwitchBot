@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('./partials/head'); %>
+    <link rel="stylesheet" href="/stylesheet/cmd.css">
+</head>
+<body>
+    <div class="wrapper">
+        <table>
+            <tr>
+                <th>Permission:</th>
+                <th>Cooldown:</th>
+                <th>Description:</th>
+                <th>Admin:</th>
+                <th>Active:</th>
+            </tr>
+            <% commands.forEach(function(command) { %>
+                <tr>
+                    <td><%- command.name %></td>
+                    <td><%- command.cooldown %></td>
+                    <td><%- command.description %></td>
+                    <td><%- command.admin %></td>
+                    <td><%- command.active %></td>
+                </tr>
+            <% }) %>
+        </table>
+    </div>
+</body>
+</html>
