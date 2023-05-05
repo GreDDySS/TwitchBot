@@ -32,5 +32,5 @@ module.exports.config = {
     cooldown: 10000,
     aliases: ["accountage", "age"],
     active: true,
-    adminOmnly: false
+    adminOnly: false
 }
