@@ -4,7 +4,7 @@ exports.run = async (client, chat, channel, commandData) => {
     const data = JSON.parse(fs.readFileSync("other/celebration.json", {encoding: "utf-8"}))
     const num = greddBot.Utils.misc.random(data.length)
     if(commandData.message.args[0] === "тык" && channel === "iamplugg") {
-        return chat.send(channel, `${user} Сегодняшний праздник: ${data[num - 1]}`)
+        return client.say(channel, `${user} Сегодняшний праздник: ${data[num - 1]}`)
     }
     if(commandData.message.args[0] === "info") {
         return chat.send(channel, `Сегодняшний праздник: ${data[num - 1]} — ${num} из ${data.length}`)
