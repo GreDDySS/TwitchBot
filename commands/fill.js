@@ -1,6 +1,6 @@
 exports.run = async (client, chat, channel, commandData) => {
     let arr = ""
-    const arg = commandData.messgae.args.join(" ").replace('!', 'ǃ').replace('=', '꓿').replace('$', '💲').replace("🥛", "⚪") + ' '
+    const arg = commandData.message.args.join(" ").replace('!', 'ǃ').replace('=', '꓿').replace('$', '💲').replace("🥛", "⚪") + ' '
     
     while (arr.length + arg.length + 1 < 485) arr += arg.repeat(1) + ' '
     return chat.send(channel, `${arr}`)
