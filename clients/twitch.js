@@ -81,7 +81,9 @@ client.on("CLEARCHAT", async (msg) => {
     }
     if (msg.isPermaban && !msg.banDuration) {
         greddBot.Logger.warn(`${pc.yellow("[BAN]")} || ${msg.targetUsername} got banned in ${msg.channelName}`)
-        await greddBot.DB.db.query(`Update channel Set "ignore" = 1 Where "name" = '${msg.channelName}'`)
+        if (msg.targetUsername === greddBot.Config.username) {
+            await greddBot.DB.db.query(`Update channel Set "ignore" = '1' Where "name" = '${msg.channelName}'`)
+        }
     }
     if (msg.wasChatCleared()) {
         greddBot.Logger.warn(`${pc.yellow("[CLEARCHAT]")} || Chat was cleared in ${msg.channelName}`)
