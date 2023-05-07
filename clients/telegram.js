@@ -20,14 +20,6 @@ bot.onText(/\/menu/, (msg, match) => {
     bot.sendMessage(msg.chat.id, reply, menu)
 })
 
-bot.onText(/\/message/, (msg, match) => {
-    if (msg.chat.id !== isAdmin) return
-    let reply = `
-    🤖 Меню каналов
-    ⚪ Выбери канал к котору подключится:`
-    bot.sendMessage(msg.chat.id, reply, channels)
-})
-
 bot.on("callback_query", async (msg) => {
     var req = msg.data.split("_")
     var index = req[0]
