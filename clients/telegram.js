@@ -1,10 +1,11 @@
 const TelegrmBot = require("node-telegram-bot-api")
 const bot = new TelegrmBot(greddBot.Config.tgToken, {polling: true})
+const isAdmin = 916200887
 
-var options = {
+const menu = {
     reply_markup: JSON.stringify({
         inline_keyboard: [
-            [{text: 'Обновить праздник', callback_data: "Celebration"}],
+            [{text: 'Обновить праздник', callback_data: 'Celebration'}],
             [{text: 'Перезагрузить SevenTV', callback_data: 'SevenTV'}],
             [{text: 'Статистика', callback_data: 'Stats'}]
         ]
@@ -12,17 +13,16 @@ var options = {
 }
 
 bot.onText(/\/menu/, (msg, match) => {
-    if (msg.chat.id !== 916200887) return
-    const data = `
+    if (msg.chat.id !== isAdmin) return
+    let reply = `
     🤖 Меню бота
     ⚪ Выбери исполняемую команду:`
-    bot.sendMessage(msg.chat.id, data, options)
+    bot.sendMessage(msg.chat.id, reply, menu)
 })
 
 bot.on("callback_query", async (msg) => {
     var req = msg.data.split("_")
     var index = req[0]
-
     // Update celebration
     if (index == "Celebration") {
         await greddBot.Utils.celebration.getListCelebration()
