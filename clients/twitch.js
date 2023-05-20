@@ -157,7 +157,7 @@ const handleUserMessage = async (msg) => {
         }
     }
     if (commandData.user.id == "555579413" && message == "monkaGIGAftSaj 🚨 НАЗАР АУДАРЫҢЫЗ!") {
-        greddBot.Utils.command.sendCommand("ilotterytea", "/me monkaS 🚨 АЛЕРТ!")
+        greddBot.Utils.command.sendCommand("ilotterytea", "/me monkaS 🚨 АЛЁРТ!")
     }
 
     
