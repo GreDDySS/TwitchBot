@@ -94,7 +94,6 @@ client.on("CLEARCHAT", async (msg) => {
 client.on("PRIVMSG", (msg) => handleUserMessage(msg))
 
 const handleUserMessage = async (msg) => {
-    const botID = ["887673977", "555579413", "68136884", "100135110", "725333641"]
     const type = "privmsg"
     const message = msg.messageText
     const content = message.split(/\s+/g)
@@ -145,10 +144,7 @@ const handleUserMessage = async (msg) => {
         return
     }
 
-    // Ingore bots messages
-    if(msg.senderUserID == botID) {
-        return
-    }
+    
 
     // Logging stats
     greddBot.Stats.log.logCmds()
@@ -159,6 +155,9 @@ const handleUserMessage = async (msg) => {
         if(message == "Alright") {
             client.say(commandData.channel, "Alright")
         }
+    }
+    if (commandData.user.id == "555579413" && message == "monkaGIGAftSaj 🚨 НАЗАР АУДАРЫҢЫЗ!") {
+        greddBot.Utils.command.sendCommand("ilotterytea", "/me monkaS 🚨 АЛЕРТ!")
     }
 
     
