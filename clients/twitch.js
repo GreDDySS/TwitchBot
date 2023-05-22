@@ -156,7 +156,7 @@ const handleUserMessage = async (msg) => {
             client.say(commandData.channel, "Alright")
         }
         if (message == "monkeos"){
-            if(commandData.user.id == "555579413" || commandData.user.id == "725333641") return
+            if(commandData.user.id == "555579413" || commandData.user.id == "725333641" || commandData.user.id == "812296822") return
             client.say(commandData.channel, "monkeos")
         }
     }
