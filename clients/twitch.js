@@ -155,6 +155,10 @@ const handleUserMessage = async (msg) => {
         if(message == "Alright") {
             client.say(commandData.channel, "Alright")
         }
+        if (message == "monkeos"){
+            if(commandData.user.id == "555579413" || commandData.user.id == "725333641") return
+            client.say(commandData.channel, "monkeos")
+        }
     }
     if (commandData.user.id == "555579413" && message == "monkaGIGAftSaj 🚨 НАЗАР АУДАРЫҢЫЗ!") {
         greddBot.Utils.command.sendCommand("ilotterytea", "/me monkaS 🚨 АЛЁРТ!")
