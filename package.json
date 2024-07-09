@@ -25,6 +25,11 @@
   "scripts": {
     "start": "nodemon main.js"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "./other/celebration.json"
+    ]
+  },
   "author": "GreDDySS",
   "license": "ISC"
 }
