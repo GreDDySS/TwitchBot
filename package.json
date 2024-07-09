@@ -1,0 +1,30 @@
+{
+  "dependencies": {
+    "@kararty/dank-twitch-irc": "^6.2.0",
+    "axios": "^1.7.2",
+    "cheerio": "^1.0.0-rc.12",
+    "child_process": "^1.0.2",
+    "dotenv": "^16.4.5",
+    "eventsource": "^2.0.2",
+    "express": "^4.19.2",
+    "humanize-duration": "^3.32.1",
+    "math": "^0.0.3",
+    "node-telegram-bot-api": "^0.66.0",
+    "nodemon": "^3.1.4",
+    "pg": "^8.12.0",
+    "picocolors": "^1.0.1",
+    "request-promise": "^4.2.6",
+    "twitchps": "^1.6.0",
+    "winston": "^3.13.0"
+  },
+  "name": "twitchbot",
+  "version": "0.0.1",
+  "description": "Smol TwitchBot",
+  "main": "main.js",
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon main.js"
+  },
+  "author": "GreDDySS",
+  "license": "ISC"
+}
