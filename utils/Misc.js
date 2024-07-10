@@ -83,7 +83,7 @@ const randomArg = (arg) => {
 }
 
 const logError = async (name, reason, stack) => {
-  await greddBot.DB.db.query(
+  await bot.DB.db.query(
     `Insert into "log" ("name", "message", "stack") values ($1, $2, $3)`,
   [name, reason, stack]
   )
