@@ -10,9 +10,12 @@ const db = new Client({
 })
 
 async function start() {
-    db.connect().then(() => {
-        bot.Logger.info(`${pc.green("[DATABASE]")} || DataBase connect successfully 🟢`)})
-        .catch((err) => {bot.Logger.error(`${pc.red("[DATABSE]")} || Error connecting to database`)})
+  try {
+    await db.connect();
+    bot.Logger.info(`${pc.green("[DATABASE]")} || DataBase connect successfully 🟢`);
+  } catch (err) {
+    bot.Logger.error(`${pc.red("[DATABASE]")} || Error connecting to database: ${err.message}`);
+  }
 }
 
 module.exports = {db, start}
