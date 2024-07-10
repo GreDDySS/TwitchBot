@@ -1,5 +1,5 @@
 const getById = async (userId) => {
-    const channelData = await bot.DB.public.query(`Select * from channel where "userId" = '${userId}'`)
+    const channelData = await bot.DB.db.query(`Select * from channel where "userId" = '${userId}'`)
     if(!channelData) {
         return undefined
     }
@@ -7,7 +7,7 @@ const getById = async (userId) => {
 }
 
 const getByName = async (username) => {
-    const channelData = await bot.DB.public.query(`Select * from channel where "name" = '${username}'`)
+    const channelData = await bot.DB.db.query(`Select * from channel where "name" = '${username}'`)
     if (!channelData) {
         return undefined
     }
@@ -15,7 +15,7 @@ const getByName = async (username) => {
 }
 
 const getJoinable = async () => {
-    const channels = await bot.DB.db.query(`Select * from public.channel where "ignore" = '0'`)
+    const channels = await bot.DB.db.query(`Select * from channel where "ignore" = '0'`)
     const result = channels.rows.map((item) => {
         return item.name
     })
@@ -23,7 +23,7 @@ const getJoinable = async () => {
 }
 
 const getListenable = async () => {
-    const channels = await bot.DB.public.query(`Select * from channel where "listenStreamStatus" = '0'`)
+    const channels = await bot.DB.db.query(`Select * from channel where "listenStreamStatus" = '0'`)
     const result = channels.rows.map((item) => {
         return item.userId
     })
@@ -31,7 +31,7 @@ const getListenable = async () => {
 }
 
 const getSevenID = async () => {
-    const channels = await bot.DB.public.query(`Select * from channel where "sevenTV" = '1'`)
+    const channels = await bot.DB.db.query(`Select * from channel where "sevenTV" = '1'`)
     const result = channels.rows.map((item) => {
         return item.sevenID
     })
@@ -39,7 +39,7 @@ const getSevenID = async () => {
 }
 
 const getSevenUsername = async (id) => {
-    const channels = await bot.DB.public.query(`Select * from channel where "sevenID" = '${id}'`)
+    const channels = await bot.DB.db.query(`Select * from channel where "sevenID" = '${id}'`)
     const result = channels.rows.map((item) => {
         return item.name
     })
