@@ -1,25 +1,28 @@
+const utils = require("util")
+const pc = require("picocolors");
+const fs = require("fs");
+
 global.bot = {}
 
 
 bot.Config = require("./utils/Config")
-bot.Twitch = require("./clients/Twitch")
-bot.Logger = require("./utils/Winston")
 bot.DB = {db} = require("./modules/Database")
+bot.Logger = require("./utils/Winston")
 bot.Channel = require("./utils/Channel")
 bot.Utils = {
-    misc: require("./utils/Misc"),
-    APITwitch: require("./utils/APITwitch"),
-    ApiClient: require("./utils/APIClients"),
-    // stats: require("./utils/StatsUpdate"),
-    Celebration: require("./utils/Celebration"),
-    temp: {cmdCount: 0},
-}
+        misc: require("./utils/Misc"),
+        APITwitch: require("./utils/APITwitch"),
+        ApiClient: require("./utils/APIClients"),
+        command: require("./modules/Command"),
+        Celebration: require("./utils/Celebration"),
+        temp: {cmdCount: 0},
+    }
+bot.Twitch = require("./clients/Twitch")
 
 async function start() {
     try {
         await bot.DB.start();
         await bot.Twitch.initialize()
-        await bot.Utils.Celebration.getListCelebration()
     } catch (e) {
         bot.Logger.error(`Error encountered during initialization: ${e}`)
     }
