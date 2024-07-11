@@ -46,4 +46,13 @@ const getSevenUsername = async (id) => {
     return result
 }
 
-module.exports = {getById, getByName, getJoinable, getListenable, getSevenID, getSevenUsername}
+const getChannelLogging = async () => {
+    const channels = await bot.DB.db.query(`Select * from channel where "logging" = '1'`)
+    const result = channels.rows.map((item) => {
+        return item.userId
+    })
+    return result
+}
+
+
+module.exports = {getById, getByName, getJoinable, getListenable, getSevenID, getSevenUsername, getChannelLogging}
