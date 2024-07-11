@@ -15,6 +15,7 @@ bot.Utils = {
         ApiClient: require("./utils/APIClients"),
         command: require("./modules/Command"),
         Celebration: require("./utils/Celebration"),
+        Logging: require("./utils/Logging"),
         temp: {cmdCount: 0},
     }
 bot.Twitch = require("./clients/Twitch")
