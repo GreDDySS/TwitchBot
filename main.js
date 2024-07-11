@@ -23,6 +23,7 @@ async function start() {
     try {
         await bot.DB.start();
         await bot.Twitch.initialize()
+        await bot.Utils.Celebration.getListCelebration()
     } catch (e) {
         bot.Logger.error(`Error encountered during initialization: ${e}`)
     }
