@@ -1,5 +1,4 @@
 const {AlternateMessageModifier, SlowModeRateLimiter, ChatClient, LoginError, JoinError, SayError, PrivmsgMessage} = require("@kararty/dank-twitch-irc")
-const {LoggerCMD, cmdCount , lastCmdUseTime} = require("../utils/Logging")
 const pc = require("picocolors")
 const fs = require("fs")
 
@@ -105,7 +104,7 @@ const handleUserMessage = async (msg) => {
           name: msg.displayName,
           login: msg.senderUsername,
           color: msg.colorRaw,
-          badges: msg.badges,
+          badges: msg.badgesRaw,
         },
         message: {
           raw: msg.rawSource,
@@ -119,13 +118,11 @@ const handleUserMessage = async (msg) => {
         channelMeta: channelMeta,
         userState: msg.ircTags,
     };
-
+    
     // Ignore any message from self
     if(msg.senderUsername == bot.Config.username) {
         return
     }
-
-    LoggerCMD()
 
     if (msg.senderUsername === bot.Config.username && channelMeta) {
         const currentMode = channelMeta.map((item) => { return item.mode})
@@ -165,7 +162,7 @@ const handleUserMessage = async (msg) => {
 
     const chat = bot.Utils.command  
     if (msg.messageText.startsWith(bot.Config.prefix)) {
-        LoggerCMD()
+        bot.Logging.LoggerCMD()
         let cmd = commandString.toLowerCase()
         let channel = commandData.channel
         var cmdF = client.commands.get(cmd) || client.commands.get(client.aliases.get(cmd))
@@ -179,8 +176,8 @@ const handleUserMessage = async (msg) => {
         if (cmdF.config.adminOnly && !(commandData.user.name == bot.Config.owner)) return;
         try {
             cmdF.run(client, chat, channel, commandData)
-            cmdCount++
-            lastCmdUseTime = Date.now()
+            bot.Utils.Temp.cmdCount++
+            bot.Utils.Temp.lastCmdUseTime = Date.now()
             setUserCooldown(cmdF, commandData)
         } catch (err) {
             bot.Utils.misc.logError("Commands", err.message, err.stack || "")

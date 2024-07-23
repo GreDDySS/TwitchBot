@@ -6,7 +6,7 @@ exports.run = async (client, chat, channel, commandData) => {
     const memory = Math.round(used * 100) / 100
     const channelCount = await bot.Channel.getJoinable()
     
-    chat.send(channel, `@${commandData.user.name} PONG! 🟢 Ping: ${dateAfterPing - dateNow}ms | Channels: ${channelCount.length} | Uptime: ${bot.Utils.misc.uptime()} | Memory: ${memory}MB/512MBs | Cmd executed: ${bot.Utils.temp.cmdCount}`)
+    chat.send(channel, `@${commandData.user.name} PONG! 🟢 Ping: ${dateAfterPing - dateNow}ms | Channels: ${channelCount.length} | Uptime: ${bot.Utils.misc.uptime()} | Memory: ${memory}MB/512MBs`)
 }
 module.exports.config = {
     name: "ping",

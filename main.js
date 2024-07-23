@@ -8,6 +8,7 @@ global.bot = {}
 bot.Config = require("./utils/Config")
 bot.DB = {db} = require("./modules/Database")
 bot.Logger = require("./utils/Winston")
+bot.Logging = require("./utils/Logging")
 bot.Channel = require("./utils/Channel")
 bot.Utils = {
         misc: require("./utils/Misc"),
@@ -15,7 +16,8 @@ bot.Utils = {
         ApiClient: require("./utils/APIClients"),
         command: require("./modules/Command"),
         Celebration: require("./utils/Celebration"),
-        Logging: require("./utils/Logging")
+        Logging: require("./utils/Logging"),
+        Temp: {cmdCount: 0, lastCmdUseTime: 0}
     }
 bot.Twitch = require("./clients/Twitch")
 bot.PubSub = require("./clients/PubSub")
@@ -23,8 +25,8 @@ bot.SevenTv = require("./clients/SevenTV")
 
 async function start() {
     try {
-        await bot.DB.start();
-        await bot.Twitch.initialize()
+        await bot.DB.start()
+        await bot.Twitch.initialize().then(bot.Logging.Logger())
         await bot.SevenTv.initialize()
         await bot.Utils.Celebration.getListCelebration()
         bot.PubSub

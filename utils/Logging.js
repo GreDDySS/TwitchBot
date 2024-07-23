@@ -1,8 +1,7 @@
 const pc = require("picocolors")
 var messageCount = 0
 var lastMessageTime = 0
-var cmdCount = 0
-var lastCmdUseTime = 0
+
 async function Logger() {
     const channels = await bot.Channel.getChannelLogging()
     const buffers = {}
@@ -60,13 +59,13 @@ async function LoggerMessage() {
 
 async function LoggerCMD() {
     setTimeout(() => {
-        const timeSinceLastCmdUse = Date.now() - lastCmdUseTime
+        const timeSinceLastCmdUse = Date.now() -  bot.Utils.Temp.lastCmdUseTime
         
         if (timeSinceLastCmdUse >= 10000) {
-            if(cmdCount == 0) return
-            cmdUsed(cmdCount)
-            cmdCount = 0
-            lastCmdUseTime = Date.now()
+            if(bot.Utils.Temp.cmdCount == 0) return
+            cmdUsed(bot.Utils.Temp.cmdCount)
+            bot.Utils.Temp.cmdCount = 0
+            bot.Utils.Temp.lastCmdUseTime = Date.now()
         }
         LoggerCMD()
     }, 10000)
@@ -75,8 +74,8 @@ async function LoggerCMD() {
 
 
 async function loggingMessage(channelID, messages) {
-    const values = messages.map(msg => `('${msg.username}', '${msg.badgesRaw}', '${msg.color}', '${msg.message}', to_timestamp(${msg.date} / 1000.0))`)
-    const query = `INSERT INTO "channelLogs"."${channelID}" (username, color, message, date) VALUES ${values}`
+    const values = messages.map(msg => `('${msg.username}', '${msg.badge}', '${msg.color}', '${msg.message}', to_timestamp(${msg.date} / 1000.0))`)
+    const query = `INSERT INTO "channelLogs"."${channelID}" (username, badge, color, message, date) VALUES ${values}`
 
     try {
         await bot.DB.db.query(query)
@@ -115,6 +114,5 @@ const cmdUsed = async (cmdCount) => {
     }
     
 }
-Logger()
 
-module.exports = {LoggerCMD, cmdCount, lastCmdUseTime}
+module.exports = {LoggerCMD, Logger}
