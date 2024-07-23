@@ -15,16 +15,19 @@ bot.Utils = {
         ApiClient: require("./utils/APIClients"),
         command: require("./modules/Command"),
         Celebration: require("./utils/Celebration"),
-        Logging: require("./utils/Logging"),
-        temp: {cmdCount: 0},
+        Logging: require("./utils/Logging")
     }
 bot.Twitch = require("./clients/Twitch")
+bot.PubSub = require("./clients/PubSub")
+bot.SevenTv = require("./clients/SevenTV")
 
 async function start() {
     try {
         await bot.DB.start();
         await bot.Twitch.initialize()
+        await bot.SevenTv.initialize()
         await bot.Utils.Celebration.getListCelebration()
+        bot.PubSub
     } catch (e) {
         bot.Logger.error(`Error encountered during initialization: ${e}`)
     }
