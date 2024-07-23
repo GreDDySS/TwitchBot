@@ -18,8 +18,8 @@ async function Logger() {
         
         buffers[channelID].push({
             username: msg.displayName,
-            color: msg.colorRaw,
             badge: msg.badgesRaw,
+            color: msg.colorRaw,
             message: msg.messageText,
             date: Date.now()
         })
@@ -35,7 +35,7 @@ async function Logger() {
     setInterval(async () => {
         for (const channelID in buffers) {
             if (buffers[channelID].length > 0) {
-             //   await loggingMessage(channelID, buffers[channelID])
+             await loggingMessage(channelID, buffers[channelID])
                 buffers[channelID] = []
             }
         }
@@ -75,7 +75,7 @@ async function LoggerCMD() {
 
 
 async function loggingMessage(channelID, messages) {
-    const values = messages.map(msg => `('${msg.username}', '${msg.color}', '${msg.message}', to_timestamp(${msg.date} / 1000.0))`)
+    const values = messages.map(msg => `('${msg.username}', '${msg.badgesRaw}', '${msg.color}', '${msg.message}', to_timestamp(${msg.date} / 1000.0))`)
     const query = `INSERT INTO "channelLogs"."${channelID}" (username, color, message, date) VALUES ${values}`
 
     try {
