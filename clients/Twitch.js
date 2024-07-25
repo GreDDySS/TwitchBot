@@ -59,12 +59,12 @@ client.on("error", (error) => {
         return bot.Logger.error(`${pc.red("[T-LOGIN]")} || Error logging in to twitch: ${error}`)
     }
     if (error instanceof JoinError) {
-        return // bot.Logger.error(`${pc.red("[T-JOIN]")} || Error joing channel ${error.failedChannelName} : ${error}`)
+        return // bot.Logger.error(`${pc.red("[T-JOIN]")} || Error joining channel ${error.failedChannelName} : ${error}`)
     }
     if (error instanceof SayError) {
         return bot.Logger.error(`${pc.red("[T-SAT]")} || Error sending message in: ${error.failedChannelName} : ${error.cause} | ${error.message}`)
     }
-    bot.Logger.error(`${pc.red("[T-ERROR]")} || Error occured in DTI: ${error}`)
+    bot.Logger.error(`${pc.red("[T-ERROR]")} || Error occurred in DTI: ${error}`)
 })
 
 client.on("ready", async ()=> {
