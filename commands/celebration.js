@@ -1,5 +1,5 @@
 const fs = require("fs")
-const user = `Artemu5 BJlaguK_ Bustegg Eggrereal Fedotir GreDDySS GuyRalt Gvardovskiy Gwinsen Iamplugg Iamplugs Matria9 RandomCancer RandomCancer2 StreamElements SunsetColours_ Tuwka_ Xomachel ZULULpa aetenae borobushE crestavlennn eggUrt iLotterytea BetterCallTelevizor m4x0nn monkeoS oladushegg_ rilaveon saopin vexenigmus SunsetColours_ lydeco_ HumanStudi0 AlexanderLer Nipropieren drt_s_s`
+const user = `Artemu5 BJlaguK_ Eggrereal Fedotir GreDDySS GuyRalt Gvardovskiy Iamplugg Matria9 RandomCancer StreamElements SunsetColours_ Tuwka_ Xomachel ZULULpa borobushE crestavlennn eggUrt iLotterytea  m4x0nn monkeoS rilaveon saopin lydeco_ HumanStudi0 Nipropieren avacuoss TheRennaisance neizyum `
 exports.run = async (client, chat, channel, commandData) => {
     const data = JSON.parse(fs.readFileSync("other/celebration.json", {encoding: "utf-8"}))
     const num = bot.Utils.misc.random(data.length)
