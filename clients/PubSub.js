@@ -2,7 +2,7 @@ const TwitchPubSub = require("twitchps")
 const pc = require("picocolors")
 
 const pubsub = new TwitchPubSub({
-    init_topics: [{topic: `video-playback.${bot.Config.owner}`}],
+    init_topics: [{topic: `video-playback.${bot.Config.owner},video-playback.borobushe`}],
     reconnect: true,
     debug: false
 })
@@ -20,9 +20,10 @@ pubsub.on('reconnect', () => {
 });
 
 pubsub.on('stream-up', async (data) => {
-    client.say("greddyss", `/announce Стрим начался`)
+    console.log(data)
+    // client.say("greddyss", `/announce Стрим начался`)
 })
 
 pubsub.on('stream-down', async (data) => {
-    client.say("greddyss", `/announce Стрим закончился`)
+    // client.say("greddyss", `/announce Стрим закончился`)
 })

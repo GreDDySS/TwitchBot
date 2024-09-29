@@ -55,16 +55,18 @@ async function initialize() {
 }
 
 client.on("error", (error) => {
-    if (error instanceof LoginError) {
-        return bot.Logger.error(`${pc.red("[T-LOGIN]")} || Error logging in to twitch: ${error}`)
+    const errorHandlers = {
+        LoginError: () => bot.Logger.error(`${pc.red("[T-LOGIN]")} || Error logging in to twitch: ${error}`),
+        JoinError: () => bot.Logger.error(`${pc.red("[T-JOIN]")} || Error joining channel ${error.failedChannelName} : ${error}`),
+        SayError: () => bot.Logger.error(`${pc.red("[T-SAT]")} || Error sending message in: ${error.failedChannelName} : ${error.cause} | ${error.message}`),
     }
-    if (error instanceof JoinError) {
-        return // bot.Logger.error(`${pc.red("[T-JOIN]")} || Error joining channel ${error.failedChannelName} : ${error}`)
+
+    const errorType  = error.constructor.name
+    const errorMessage = errorHandlers[errorType]?.() || `${pc.red("[T-ERROR]")} || Произошла ошибка в DTI: ${error}`
+
+    if (errorMessage) {
+        bot.Logger.error(errorMessage);
     }
-    if (error instanceof SayError) {
-        return bot.Logger.error(`${pc.red("[T-SAT]")} || Error sending message in: ${error.failedChannelName} : ${error.cause} | ${error.message}`)
-    }
-    bot.Logger.error(`${pc.red("[T-ERROR]")} || Error occurred in DTI: ${error}`)
 })
 
 client.on("ready", async ()=> {

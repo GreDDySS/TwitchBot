@@ -1,6 +1,7 @@
-const utils = require("util")
-const pc = require("picocolors");
-const fs = require("fs");
+const util = require('util');
+const pc = require('picocolors');
+const fs = require('fs').promises;
+
 
 global.bot = {}
 
@@ -23,18 +24,20 @@ bot.Twitch = require("./clients/Twitch")
 bot.PubSub = require("./clients/PubSub")
 bot.SevenTv = require("./clients/SevenTV")
 
-async function start() {
+
+async function initializeBot() {
     try {
         await bot.DB.start()
-        await bot.Twitch.initialize().then(bot.Logging.Logger())
+        await bot.Twitch.initialize()
+        await bot.Logging.Logger()
         await bot.SevenTv.initialize()
         await bot.Utils.Celebration.getListCelebration()
         bot.PubSub
     } catch (e) {
         bot.Logger.error(`Error encountered during initialization: ${e}`)
+        throw e; 
     }
 }
-start()
 
 process
 .on('unhandledRejection', async (reason, promise) => {
@@ -46,3 +49,14 @@ process
     bot.Logger.error(`${pc.red('[UncaughtException]')} || ${err.message}`);
     return process.exit(0);
 });
+
+async function main() {
+    try {
+        await initializeBot()
+        bot.Logger.info(`${pc.green('[Main]')} || Bot started successfully!`)
+    } catch (e) {
+        bot.Logger.error(`${pc.red('[Main]')} || Error starting bot: ${e}`)
+        process.exit(0)
+    }
+}
+main()
