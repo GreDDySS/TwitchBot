@@ -1,6 +1,5 @@
 import { Logger } from "../Modules/Logger"
 import type { cmdData, Bot } from "../types"
-import {client} from "../Clients/Twitch"
 import { Channel } from "../Database/Channel"
 
 const ping = {
