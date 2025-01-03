@@ -4,6 +4,7 @@ interface Bot {
   Config?: botConfig;
   Twitch?: client;
   Commands?: command[];
+  Temp: botTemp;
   CommandUtils: commandUtils;
 
 }
@@ -69,6 +70,10 @@ type commandUtils = {
   send: (channel: string, message: string) => Promise<void>;
   sendError: (channel: string, message: string) => Promise<void>;
   sendCommand: (channel: string, message: string) => Promise<void>;
+}
+
+type botTemp = {
+  cmdCount: number;
 }
 
 export type channelStats = {
