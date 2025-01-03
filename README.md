@@ -14,7 +14,7 @@ bun run index.ts
 
 This project was created using `bun init` in bun v1.1.42. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
 
-
+```python
 /project-root
 ├── clients/               // Модули для работы с API
 │   ├── Twitch.ts          // Клиент для подключения к Twitch IRC
@@ -51,3 +51,4 @@ This project was created using `bun init` in bun v1.1.42. [Bun](https://bun.sh) 
 ├── types.d.ts             // Описание типов данных
 ├── package.json           // Информация о проекте
 └── index.ts               // Точка входа
+```
