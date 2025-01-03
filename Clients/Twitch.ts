@@ -23,6 +23,7 @@ client.use(new SlowModeRateLimiter(client, 10));
 const bot: Bot = {
   Config: config,
   Twitch: client,
+  Temp: {cmdCount: 0},
   CommandUtils: {
     send,
     sendError,
@@ -72,9 +73,9 @@ client.on("CLEARCHAT", async (msg) => {
 client.on("PRIVMSG", async (msg) => {
   if (msg.senderUsername !== config.twitch.bot) {
     await handleUserMessage(msg);
+    await Stats.incrementMessage(msg.channelID);
   };
 
-  await Stats.incrementMessage(msg.channelID);
 
   // check permissions bot in chat (chatter, mod, broadcaster)
   if (msg.senderUsername == config.twitch.bot) {
@@ -164,6 +165,7 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
   try {
     await cmd.execute(commandData, bot);
     await Stats.incrementCommand(msg.channelID);
+    bot.Temp.cmdCount++;
   } catch (error) {
     Logger.error(`${pc.red("[COMMAND ERROR]")} || Error executing command ${cmd.name}: ${error}`);
   }
