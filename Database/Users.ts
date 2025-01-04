@@ -2,6 +2,7 @@ import { query } from "../Modules/Database";
 import { Logger } from "../Modules/Logger";
 import pc from "picocolors";
 import type { cmdData } from "../types"
+import { bot } from "../Clients/Twitch"
 
 export class Users {
   /**
@@ -41,6 +42,7 @@ export class Users {
       }
     } catch (e) {
       Logger.error(`${pc.red("[USERS ERROR]")} || Failed adding/updating user: ${e}`);
+      bot.Utils.logError("USERS ERROR", (e as Error).message, (e as Error).stack || "");
       throw e;
     }
   }

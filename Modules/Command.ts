@@ -1,6 +1,6 @@
 import { SayError } from "@kararty/dank-twitch-irc";
 import pc from "picocolors";
-import { client } from "../Clients/Twitch";
+import { bot, client } from "../Clients/Twitch";
 import { Logger } from "./Logger";
 const LENGTH_LIMIT = 400;
 
@@ -27,10 +27,10 @@ export const send = async (channel: string, message: string): Promise<void> => {
         await client.say(channel, "Error while processing the reply message monkaS");
       }
       Logger.error(`${pc.red("[MESSAGE ERROR]")} || Error while processing the reply message: ${error.message}`);
-      //TODO: log in the database
+      bot.Utils.logError("MESSAGE ERROR", error.message, error.stack || "");
     } else {
       Logger.error(`${pc.red("[UNEXPECTED ERROR]")} || Unexpected error: ${error}`);
-      //TODO: log in the database
+      bot.Utils.logError("UNEXPECTED ERROR", (error as Error).message, (error as Error).stack || "");
     }
   }
 };
@@ -54,5 +54,6 @@ export const sendCommand = async (channel: string, message: string): Promise<voi
     await client.privmsg(channel, message);
   } catch (error) {
     Logger.error(`${pc.red("[COMMAND ERROR]")} || Error while processing the command: ${error}`);
+    bot.Utils.logError("COMMAND ERROR", (error as Error).message, (error as Error).stack || "");
   }
 };
