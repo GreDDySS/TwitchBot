@@ -10,6 +10,8 @@ import { getCommand, loadCommands } from '../Modules/LoadCommand'
 import { checkCooldown } from '../utils/Cooldown'
 import {send, sendError, sendCommand} from "../Modules/Command"
 import { Stats } from '../Database/Stats';
+import { formatTimestamp, humanizeDuration, isJSON, logError, random, randomArg, randomConnectEmote, timeDelta, uptime } from "../utils/Utils";
+
 
 const client = new ChatClient({
   username: config.twitch.bot,
@@ -17,10 +19,7 @@ const client = new ChatClient({
   rateLimits: "default"
 });
 
-client.use(new AlternateMessageModifier(client));
-client.use(new SlowModeRateLimiter(client, 10));
-
-const bot: Bot = {
+export const bot: Bot = {
   Config: config,
   Twitch: client,
   Temp: {cmdCount: 0},
@@ -28,8 +27,22 @@ const bot: Bot = {
     send,
     sendError,
     sendCommand
+  },
+  Utils: {
+    humanizeDuration: humanizeDuration,
+    timeDelta: timeDelta,
+    uptime: uptime,
+    randomConnectEmote: randomConnectEmote,
+    random: random,
+    randomArg: randomArg,
+    logError: logError,
+    formatTimestamp: formatTimestamp,
+    isJSON: isJSON
   }
 };
+
+client.use(new AlternateMessageModifier(client));
+client.use(new SlowModeRateLimiter(client, 10));
 
 async function initalize() {
   try {
@@ -169,9 +182,6 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
   } catch (error) {
     Logger.error(`${pc.red("[COMMAND ERROR]")} || Error executing command ${cmd.name}: ${error}`);
   }
-  
-
-
 }
 
 export {initalize, client}
