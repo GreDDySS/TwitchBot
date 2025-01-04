@@ -15,6 +15,7 @@ export const config: botConfig = {
   },
   telegram: {
     token: process.env.TG_TOKEN!,
+    adminChatId: process.env.TG_ADMIN_CHAT_ID!,
   },
   database: {
     host: process.env.DB_HOST!,

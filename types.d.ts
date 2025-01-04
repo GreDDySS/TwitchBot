@@ -21,6 +21,7 @@ export type botConfig = {
   };
   telegram: {
     token: string;
+    adminChatId: string;
   };
   database: {
     host: string;
