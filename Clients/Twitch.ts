@@ -50,10 +50,10 @@ async function initalize() {
     const channels = await Channel.getJoinable();
     await client.joinAll(channels);
     await client.connect();
-    Logger.info(`${pc.green("[INIT]")} Twitch client initialize successfully`);
-    await client.say("greddyss", "V2 modCheck");
+    await client.say("greddyss", `${bot.Utils.randomConnectEmote()}`);
   } catch (error) {
-    Logger.error(`${pc.red("[INIT ERROR]")} || Failed to initialize Twitch client: ${error}`);
+    Logger.error(`${pc.red("[INIT TWITCH ERROR]")} || Failed to initialize Twitch client: ${error}`);
+    bot.Utils.logError("INIT TWITCH ERROR", (error as Error).message, (error as Error).stack || "")
     throw error;
   }
 }
@@ -67,6 +67,7 @@ client.on("error", (error) => {
     return Logger.warn(`${pc.red("[SAY]")} || Error sending message in: ${error.failedChannelName} : ${error}`);
   } else {
     Logger.error(`${pc.red("[ERROR]")} || Error occured in DIT: ${error}`);
+    bot.Utils.logError("TWITCH ERROR", (error as Error).message, (error as Error).stack || "")
   }
 });
 
@@ -75,6 +76,7 @@ client.on("CLEARCHAT", async (msg) => {
     Logger.warn(`${pc.yellow("[TIMEOUT]")} ${msg.targetUsername} got timed out in ${msg.channelName} for ${msg.banDuration} seconds`);
   } else if (msg.isPermaban() && !msg.banDuration) {
     Logger.warn(`${pc.yellow("[BAN]")} ${msg.targetUsername} got banned in ${msg.channelName}`)
+
     if (msg.targetUsername == config.twitch.bot) {
       query(`UPDATE channels SET "ingore" = true WHERE "username" = '${msg.channelName}'`)
     }
@@ -181,6 +183,7 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
     bot.Temp.cmdCount++;
   } catch (error) {
     Logger.error(`${pc.red("[COMMAND ERROR]")} || Error executing command ${cmd.name}: ${error}`);
+    bot.Utils.logError("COMMAND ERROR", (error as Error).message, (error as Error).stack || "")
   }
 }
 
