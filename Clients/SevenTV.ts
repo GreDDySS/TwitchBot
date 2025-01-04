@@ -63,7 +63,7 @@ const handleEvent = async (e: MessageEvent): Promise<void> => {
       }
     }, INTERVAL);
   } catch (error) {
-    Logger.error(`${pc.red("[STV ERROR]")} || Ошибка обработки события: ${(error as Error).message}`);
+    Logger.error(`${pc.red("[STV ERROR]")} || Error: ${(error as Error).message}`);
     bot.Utils.logError("STV ERROR", (error as Error).message, (error as Error).stack || "");
   }
 };
@@ -84,12 +84,9 @@ export const initializeSTV = async (): Promise<void> => {
   try {
     await createEventSource();
     addListener();
-    Logger.info(`${pc.green("[SevenTV]")} || Успешное подключение к SevenTV 🟢`);
+    Logger.info(`${pc.green("[STV]")} || Successfully connect SevenTV 🟢`);
   } catch (error) {
-    Logger.error(
-      `${pc.red("[SevenTV ERROR]")} || Ошибка подключения: ${
-        (error as Error).message
-      }`
-    );
+    Logger.error(`${pc.red("[STV ERROR]")} || Error: ${(error as Error).message}`);
+    bot.Utils.logError("STV ERROR", (error as Error).message, (error as Error).stack || "");
   }
 };
