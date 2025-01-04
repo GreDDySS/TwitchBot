@@ -17,7 +17,7 @@ const ping = {
     const memory = Math.round(used * 100) / 100
     const channelCount = await Channel.getJoinable()
     try {
-      await client.CommandUtils.send(commandData.channel, `@${commandData.user.name} PONG! 🟢 Ping: ${dateAfterPing - dateNow}ms • Channels: ${channelCount.length} · Uptime: soon... • Memory: ${memory}MB/512MBs • cmdUsed: ${client.Temp.cmdCount}`);
+      await client.CommandUtils.send(commandData.channel, `@${commandData.user.name} PONG! 🟢 Ping: ${dateAfterPing - dateNow}ms • Channels: ${channelCount.length} · Uptime: ${client.Utils.uptime()} • Memory: ${memory}MB/512MBs • cmdUsed: ${client.Temp.cmdCount}`);
     } catch (error) {
       Logger.error(`Error executing command ${ping.name}: ${error}`);
     }
