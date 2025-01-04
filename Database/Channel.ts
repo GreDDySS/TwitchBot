@@ -42,6 +42,16 @@ export class Channel {
     return res;
   }
 
+  static async getSevenUsername(sevenID: string) {
+    const queryText = 'SELECT "channelName" FROM "Channels" WHERE "sevenID" = $1';
+    const values = [sevenID];
+    const result = await query(queryText, values);
+    const res = result.rows.map((row) => {
+      return row.channelName
+    })
+    return res;
+  }
+
   static async getChannelLogging() {
     const queryText = 'SELECT "channelID" FROM "Channels" WHERE "logging" = true';
     const result = await query(queryText);
