@@ -93,3 +93,9 @@ type utils = {
   formatTimestamp: (timestamp: string | Date) => string;
   isJSON: (str: string) => boolean;
 }
+
+export type Task = {
+  name: string;
+  schedule: string;
+  task: () => Promise<void> | void;
+}
