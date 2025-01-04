@@ -4,6 +4,7 @@ import fs from "fs/promises";
 import path from "path";
 import pc from "picocolors";
 import { Logger } from "../Modules/Logger";
+import { bot } from "../Clients/Twitch"
 
 // URL для парсинга
 const urlMy = "https://my-calend.ru/holidays";
@@ -34,6 +35,7 @@ export const getListCelebration = async (): Promise<void> => {
     Logger.info(`${pc.green("[CELEBRATION]")} || Celebration list updated!`);
   } catch (error) {
     Logger.error(`${pc.red("[CELEBRATION ERROR]")} || ${error}`);
+    bot.Utils.logError("CELEBRATION ERROR", (error as Error).message, (error as Error).stack || "");
   }
 };
 
