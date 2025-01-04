@@ -1,6 +1,8 @@
 import humanize from "humanize-duration";
 import pc from "picocolors";
 import { query } from "../Modules/Database";
+import { Logger } from "../Modules/Logger"
+import { bot } from "../Clients/Twitch"
 
 // **Настройка короткого формата для humanize-duration**
 const shortHumanize = humanize.humanizer({
@@ -77,7 +79,8 @@ export const logError = async (name: string, reason: string, stack: string) => {
       [name, reason, stack]
     );
   } catch (error) {
-    console.error(pc.red(`[DB ERROR] || Failed to log error: ${error}`));
+    Logger.error(`${pc.red(`[DB ERROR]`)} || Failed to log error: ${error}`);
+    bot.Utils.logError("DB ERROR", (error as Error).message, (error as Error).stack || "");
   }
 };
 
