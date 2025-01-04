@@ -6,6 +6,7 @@ interface Bot {
   Commands?: command[];
   Temp: botTemp;
   CommandUtils: commandUtils;
+  Utils: utils;
 
 }
 export type botConfig = {
@@ -79,4 +80,16 @@ type botTemp = {
 export type channelStats = {
   messages: number;
   commands: number;
+}
+
+type utils = {
+  humanizeDuration: (time: number) => string;
+  timeDelta: (time: number) => string;
+  uptime: () => string;
+  randomConnectEmote: () => string;
+  random: (num: number) => number;
+  randomArg: <T>(arg: T[]) => T;
+  logError: (name: string, reason: string, stack: string) => Promise<void>;
+  formatTimestamp: (timestamp: string | Date) => string;
+  isJSON: (str: string) => boolean;
 }
