@@ -3,6 +3,7 @@ import { bot, initalize } from './Clients/Twitch'
 import { query } from './Modules/Database'
 import { initializeSTV } from './Clients/SevenTV';
 import { Scheduler } from './Modules/Scheduler';
+import { initializeTelegramBot } from './Clients/Telegram';
 import pc from "picocolors";
 import util from "util";
 
@@ -23,6 +24,7 @@ Scheduler.addTask({
     await initalize()
     Logger.info(`${pc.green("[TWITCH]")} || Twitch started!`)
     await initializeSTV()
+    await initializeTelegramBot()
     Logger.info(`${pc.green("[BOT]")} || Bot started!`)
     console.log("<"+"=".repeat(50)+ ">")
   } catch (error) {
