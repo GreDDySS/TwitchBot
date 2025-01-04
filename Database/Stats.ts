@@ -1,3 +1,4 @@
+import { bot } from "../Clients/Twitch"
 import { query } from "../Modules/Database";
 import { Logger } from "../Modules/Logger";
 import type { channelStats } from "../types";
@@ -25,6 +26,7 @@ setInterval(async () => {
       Logger.info(`${pc.green("[STATS]")} || Updated stats for ${pc.cyan(channelID)} (${messages} messages, ${commands} commands)`);
     } catch (e) {
       Logger.error(`${pc.red("[STATS]")} || Error updating stats for ${pc.cyan(channelID)}: ${e}`);
+      bot.Utils.logError("STATS ERROR", (e as Error).message, (e as Error).stack || "");
     }
 
     delete buffer[channelID];
