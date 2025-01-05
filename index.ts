@@ -4,6 +4,7 @@ import { query } from './Modules/Database'
 import { initializeSTV } from './Clients/SevenTV';
 import { Scheduler } from './Modules/Scheduler';
 import { initializeTelegramBot } from './Clients/Telegram';
+import wss from './Modules/WebSocket';
 import pc from "picocolors";
 import util from "util";
 
