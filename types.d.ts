@@ -100,3 +100,12 @@ export type Task = {
   schedule: string;
   task: () => Promise<void> | void;
 }
+
+export type channelLogs = {
+  messages: {
+    username: string,
+    message: string,
+    color: string,
+    badge?: string
+  }[];
+}
