@@ -11,6 +11,7 @@ import { checkCooldown } from '../utils/Cooldown'
 import {send, sendError, sendCommand} from "../Modules/Command"
 import { Stats } from '../Database/Stats';
 import { formatTimestamp, humanizeDuration, isJSON, logError, random, randomArg, randomConnectEmote, timeDelta, uptime } from "../utils/Utils";
+import {logMessage } from '../Modules/LogsService'
 
 
 const client = new ChatClient({
@@ -91,7 +92,6 @@ client.on("PRIVMSG", async (msg) => {
     await Stats.incrementMessage(msg.channelID);
   };
 
-
   // check permissions bot in chat (chatter, mod, broadcaster)
   if (msg.senderUsername == config.twitch.bot) {
     const botbadges = msg.badges || {};
@@ -146,6 +146,7 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
   };
 
   await Users.addOrUpdateUser(commandData);
+  await logMessage(commandData.channelId, commandData.user.name, commandData.message.text, commandData.user.color, msg.badges?.join(", "));
   
   const getUserPermissions = (commandData: cmdData) => {
     const userState = commandData.userState;
