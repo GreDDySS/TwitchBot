@@ -109,3 +109,8 @@ export type channelLogs = {
     badge?: string
   }[];
 }
+
+export interface ClientMessage {
+    event: string,
+    data: any
+}
