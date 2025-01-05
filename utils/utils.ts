@@ -75,7 +75,7 @@ export const randomArg = <T>(arg: T[]): T => {
 export const logError = async (name: string, reason: string, stack: string) => {
   try {
     await query(
-      `INSERT INTO "log" ("name", "message", "stack") VALUES ($1, $2, $3)`,
+      `INSERT INTO "LogError" ("name", "message", "stack") VALUES ($1, $2, $3)`,
       [name, reason, stack]
     );
   } catch (error) {
