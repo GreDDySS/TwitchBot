@@ -24,7 +24,7 @@ setInterval(async () => {
         `, [channelID, messages, commands]
       );
 
-      Logger.info(`${pc.green("[STATS]")} || Updated stats for ${pc.cyan(channelID)} (${messages} messages, ${commands} commands)`);
+      // Logger.info(`${pc.green("[STATS]")} || Updated stats for ${pc.cyan(channelID)} (${messages} messages, ${commands} commands)`);
     } catch (e) {
       Logger.error(`${pc.red("[STATS]")} || Error updating stats for ${pc.cyan(channelID)}: ${e}`);
       bot.Utils.logError("STATS ERROR", (e as Error).message, (e as Error).stack || "");

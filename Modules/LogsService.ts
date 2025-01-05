@@ -59,7 +59,7 @@ const flushBuffer = async (): Promise<void> => {
     
     try {
       await query(queryText, values);
-      Logger.info(`${pc.green("[LOG BUFFER MESSAGE]")} || The message buffer for channel ${channelID} has been successfully saved to the database.`);
+      //Logger.info(`${pc.green("[LOG BUFFER MESSAGE]")} || The message buffer for channel ${channelID} has been successfully saved to the database.`);
     } catch (error) {
       Logger.error(`${pc.red("[LOG BUFFER MESSAGE]")} || Error writing message buffer to channel ${channelID}: ${(error as Error).message}`);
       logError("LOG BUFFER MESSAGE", (error as Error).message, (error as Error).stack || "")
