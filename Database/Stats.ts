@@ -4,6 +4,7 @@ import { Logger } from "../Modules/Logger";
 import type { channelStats } from "../types";
 import pc from "picocolors"
 import { uptime } from "../utils/Utils"
+import { broadcast } from "../Modules/WebSocket"
 
 const buffer: Record<string, channelStats> = {};
 const flushInterval = 5000 // 5 seconds
@@ -70,8 +71,13 @@ export class Stats {
 
       return formattedStatistics;
     } catch (error) {
-      Logger.error(`Ошибка получения статистики: ${(error as Error).message}`);
+      Logger.error(`${pc.red("[STATS]")} || Ошибка получения статистики: ${(error as Error).message}`);
+      bot.Utils.logError("STATS ERROR TG", (error as Error).message, (error as Error).stack || "" )
       throw new Error("Ошибка получения статистики");
     }
-  }
+  } 
+}
+
+export const sendStats = async (channelID: string, stats: {message: number, commands: number}) => {
+  broadcast('stats', {channelID, stats});
 }
