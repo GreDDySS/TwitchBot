@@ -182,7 +182,11 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
     await Stats.incrementCommand(msg.channelID);
     bot.Temp.cmdCount++;
   } catch (error) {
-    handleError("[COMMAND ERROR]", error)
+    handleError("[COMMAND ERROR]", error, {
+      command: command,
+      user: commandData.user.name,
+      channel: commandData.channel
+    })
   }
 }
 
