@@ -1,10 +1,9 @@
-import { Logger } from './Modules/Logger'
-import { bot, initalize } from './Clients/Twitch'
-import { query } from './Modules/Database'
-import { initializeSTV } from './Clients/SevenTV';
-import { Scheduler } from './Modules/Scheduler';
-import { initializeTelegramBot } from './Clients/Telegram';
-import wss from './Modules/WebSocket';
+import { Logger } from '@modules/Logger'
+import { bot, initalize } from '@clients/Twitch'
+import { query } from '@modules/Database'
+import { initializeSTV } from '@clients/SevenTV';
+import { Scheduler } from '@modules/Scheduler';
+import { initializeTelegramBot } from '@clients/Telegram';
 import pc from "picocolors";
 import util from "util";
 
