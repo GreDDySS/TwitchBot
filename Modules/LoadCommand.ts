@@ -3,6 +3,7 @@ import path from "path";
 import type { command } from "../types";
 import { Logger } from "./Logger";
 import pc from "picocolors";
+import { config } from "Config/config"
 
 const commands: Map<string, command> = new Map();
 const aliases: Map<string, string> = new Map();
@@ -42,3 +43,20 @@ export const getCommand = (name: string): command | undefined => {
   const commandName = aliases.get(name) || name;
   return commands.get(commandName);
 };
+
+export const reloadCommand = async (commandName: string): Promise<void> => {
+  const filepath = path.join(config.commandsPath, `${commandName}.ts`);
+
+  delete require.cache[require.resolve(filepath)];
+
+  const command = require(filepath).default;
+
+  if (!command.name) {
+    throw new Error(`Command ${commandName} does not have a name`);
+  }
+
+  commands.set(command.name, command);
+  command.aliases.forEach((alias: string) => aliases.set(alias, command.name));
+
+  Logger.info(`${pc.green("[COMMAND]")} || Command ${command.name} reloaded`);
+}
