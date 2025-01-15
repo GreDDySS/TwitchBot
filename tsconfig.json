@@ -22,6 +22,16 @@
     // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false
+    "noPropertyAccessFromIndexSignature": false,
+
+    // Settings project
+    "baseUrl": ".",
+    "paths": {
+      "@utils/*": ["utils/*"],
+      "@modules/": ["Modules/*"],
+      "@clients/": ["Clients/*"],
+      "@database/": ["Database/*"]
+    }
   }
+
 }
