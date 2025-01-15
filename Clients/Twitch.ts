@@ -12,6 +12,7 @@ import {send, sendError, sendCommand} from "@modules/Command"
 import { Stats } from '@database/Stats';
 import { formatTimestamp, humanizeDuration, isJSON, logError, random, randomArg, randomConnectEmote, timeDelta, uptime } from "@utils/Utils";
 import {logMessage } from '@modules/LogsService'
+import { handleError } from '@utils/errorHandler'
 
 
 const client = new ChatClient({
@@ -53,8 +54,7 @@ async function initalize() {
     await client.connect();
     await client.say("greddyss", `${bot.Utils.randomConnectEmote()}`);
   } catch (error) {
-    Logger.error(`${pc.red("[INIT TWITCH ERROR]")} || Failed to initialize Twitch client: ${error}`);
-    bot.Utils.logError("INIT TWITCH ERROR", (error as Error).message, (error as Error).stack || "")
+    handleError("[INIT TWITCH ERROR]", error)
     throw error;
   }
 }
@@ -67,8 +67,7 @@ client.on("error", (error) => {
   } else if(error instanceof SayError) {
     return Logger.warn(`${pc.red("[SAY]")} || Error sending message in: ${error.failedChannelName} : ${error}`);
   } else {
-    Logger.error(`${pc.red("[ERROR]")} || Error occured in DIT: ${error}`);
-    bot.Utils.logError("TWITCH ERROR", (error as Error).message, (error as Error).stack || "")
+    handleError("[TWITCH ERROR]", error)
   }
 });
 
@@ -183,8 +182,7 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
     await Stats.incrementCommand(msg.channelID);
     bot.Temp.cmdCount++;
   } catch (error) {
-    Logger.error(`${pc.red("[COMMAND ERROR]")} || Error executing command ${cmd.name}: ${error}`);
-    bot.Utils.logError("COMMAND ERROR", (error as Error).message, (error as Error).stack || "")
+    handleError("[COMMAND ERROR]", error)
   }
 }
 

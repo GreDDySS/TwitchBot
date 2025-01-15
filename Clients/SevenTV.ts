@@ -3,6 +3,7 @@ import pc from "picocolors";
 import { Logger } from '@modules/Logger';
 import { Channel } from '@database/Channel';
 import { bot } from '@clients/Twitch';
+import { handleError } from "@utils/errorHandler"
 
 const MAIN_URL = "https://events.7tv.io/v3@";
 let source: EventSource | null = null;
@@ -63,8 +64,7 @@ const handleEvent = async (e: MessageEvent): Promise<void> => {
       }
     }, INTERVAL);
   } catch (error) {
-    Logger.error(`${pc.red("[STV ERROR]")} || Error: ${(error as Error).message}`);
-    bot.Utils.logError("STV ERROR", (error as Error).message, (error as Error).stack || "");
+    handleError("[STV ERROR]", error);
   }
 };
 
@@ -86,7 +86,6 @@ export const initializeSTV = async (): Promise<void> => {
     addListener();
     Logger.info(`${pc.green("[STV]")} || Successfully connect SevenTV 🟢`);
   } catch (error) {
-    Logger.error(`${pc.red("[STV ERROR]")} || Error: ${(error as Error).message}`);
-    bot.Utils.logError("STV ERROR", (error as Error).message, (error as Error).stack || "");
+    handleError("[STV ERROR]", error);
   }
 };
