@@ -25,10 +25,10 @@ export class Channel {
   }
 
   static async getListenable() {
-    const queryText = 'SELECT "channelID" FROM "Channels" WHERE "listenStreamStatus" = true';
+    const queryText = 'SELECT "channelName" FROM "Channels" WHERE "listenStreamStatus" = true';
     const result = await query(queryText);
     const res = result.rows.map((row) => {
-      return row.channelID
+      return row.channelName
     })
     return res;
   }
