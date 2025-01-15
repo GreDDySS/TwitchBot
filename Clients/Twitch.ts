@@ -54,6 +54,7 @@ async function initalize() {
     await client.connect();
     await client.say("greddyss", `${bot.Utils.randomConnectEmote()}`);
   } catch (error) {
+    Logger.error(`${pc.red("[INIT TWITCH ERROR]")} || Failed to initialize Twitch client: ${error}`);
     handleError("[INIT TWITCH ERROR]", error)
     throw error;
   }
@@ -67,6 +68,7 @@ client.on("error", (error) => {
   } else if(error instanceof SayError) {
     return Logger.warn(`${pc.red("[SAY]")} || Error sending message in: ${error.failedChannelName} : ${error}`);
   } else {
+    Logger.error(`${pc.red("[ERROR]")} || Error occured in DIT: ${error}`);
     handleError("[TWITCH ERROR]", error)
   }
 });
@@ -182,6 +184,7 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
     await Stats.incrementCommand(msg.channelID);
     bot.Temp.cmdCount++;
   } catch (error) {
+    Logger.error(`${pc.red("[COMMAND ERROR]")} || Error executing command ${cmd.name}: ${error}`);
     handleError("[COMMAND ERROR]", error, {
       command: command,
       user: commandData.user.name,

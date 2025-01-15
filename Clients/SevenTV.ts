@@ -64,6 +64,7 @@ const handleEvent = async (e: MessageEvent): Promise<void> => {
       }
     }, INTERVAL);
   } catch (error) {
+    Logger.error(`${pc.red("[STV ERROR]")} || Error: ${(error as Error).message}`);
     handleError("[STV ERROR]", error);
   }
 };
@@ -85,6 +86,7 @@ export const initializeSTV = async (): Promise<void> => {
     addListener();
     Logger.info(`${pc.green("[STV]")} || Successfully connect SevenTV 🟢`);
   } catch (error) {
+    Logger.error(`${pc.red("[STV ERROR]")} || Error: ${(error as Error).message}`);
     handleError("[STV ERROR]", error);
   }
 };

@@ -6,6 +6,5 @@ export const handleError = (context: string, error: unknown, addtitionalInfo?: R
   const message = error instanceof Error ? error.message : 'Unknown error';
   const stack = error instanceof Error ? error.stack : '';
 
-  Logger.error(`${pc.red(context)}: || ${message}`, { addtitionalInfo });
   bot.Utils.logError(context, message, (error as Error).stack || " ")
 }
