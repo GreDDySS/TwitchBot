@@ -75,7 +75,6 @@ const addListener = (): void => {
 };
 
 export const initializeSTV = async (): Promise<void> => {
-  Logger.info(`${pc.green("[STV]")} || Connect in SevenTV...`);
   if (source) {
     source.close();
     source = null;
