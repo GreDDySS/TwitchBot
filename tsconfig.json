@@ -28,9 +28,9 @@
     "baseUrl": ".",
     "paths": {
       "@utils/*": ["utils/*"],
-      "@modules/": ["Modules/*"],
-      "@clients/": ["Clients/*"],
-      "@database/": ["Database/*"]
+      "@modules/*": ["Modules/*"],
+      "@clients/*": ["Clients/*"],
+      "@database/*": ["Database/*"]
     }
   }
 
