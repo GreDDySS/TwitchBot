@@ -150,21 +150,21 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
   await logMessage(commandData.channelId, commandData.user.name, commandData.message.text, commandData.user.color, msg.badges?.join(", "));
   
   const getUserPermissions = (commandData: cmdData) => {
-    const userState = commandData.userState;
+    const userState = msg.badges;
     const permissions: string[] = [];
-
-    if (userState["mod"]) permissions.push("mod");
-    if (userState["broadcast"]) permissions.push("broadcaster");
-    if (userState["vip"]) permissions.push("vip");
-    if (!permissions.includes("mod") && !permissions.includes("broadcaster") && !permissions.includes("vip")) permissions.push("chatter");
+    if (commandData.user.id === "176257472") permissions.push("admin");
+    if (userState.hasModerator) permissions.push("mod");
+    if (userState.hasBroadcaster) permissions.push("broadcaster");
+    if (userState.hasVIP) permissions.push("vip");
+    if (!permissions.includes("admin") && !permissions.includes("mod") && !permissions.includes("broadcaster") && !permissions.includes("vip")) permissions.push("chatter");
 
     return permissions;
   }
 
   if (type !== 'command') return;
 
-
   const cmd = getCommand(commandString);
+
   if (!cmd) return;
   if (!cmd.active) return;
 
@@ -178,7 +178,7 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
   }
   
   if (checkCooldown(commandData.channel, commandData.user.id, cmd.name, cmd.cooldown)) return;
-
+  
   try {
     await cmd.execute(commandData, bot);
     await Stats.incrementCommand(msg.channelID);
