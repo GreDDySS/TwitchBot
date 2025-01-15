@@ -6,6 +6,7 @@ import { Scheduler } from '@modules/Scheduler';
 import { initializeTelegramBot } from '@clients/Telegram';
 import pc from "picocolors";
 import util from "util";
+import { subscribeToStreamEvents } from '@clients/PubSub'
 
 Scheduler.addTask({
   name: "UpdateCelebrations",
@@ -19,13 +20,28 @@ Scheduler.addTask({
 (async () => {
 
   try {
+    // Connect Database
     await query('SELECT 1');
-    Logger.info(`${pc.green("[DATABASE]")} || Successfully connect Database!`);
+    Logger.info(`${pc.green("[DATABASE]")} || Successfully connect Database! 🟢`);
+
+    // Initialize Twitch
     await initalize()
-    Logger.info(`${pc.green("[TWITCH]")} || Twitch started!`)
+    Logger.info(`${pc.green("[TWITCH]")} || Twitch started! 🟢`)
+
+    // Initalize 7TV
     await initializeSTV()
+    Logger.info(`${pc.green("[STV]")} || Successfully connect SevenTV 🟢`);
+
+    // Initalize Telegram
     await initializeTelegramBot()
-    Logger.info(`${pc.green("[BOT]")} || Bot started!`)
+    Logger.info(`${pc.green("[TELEGRAM]")} || Telegram bot started! 🟢`);
+
+    // Subscribe events stream PubSub
+    await subscribeToStreamEvents()
+    Logger.info(`${pc.green("[PUBSUB]")} || Subscribed to stream events! 🟢`);
+
+
+    Logger.info(`${pc.green("[BOT]")} || Bot started! ⚡⚡⚡`)
     console.log("<"+"=".repeat(50)+ ">")
   } catch (error) {
     Logger.error(`${pc.red("[BOT]")} || Failed start bot:`, error)
