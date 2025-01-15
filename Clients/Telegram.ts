@@ -144,5 +144,5 @@ const reloadModule = async (moduleName: string): Promise<string> => {
 
 // Инициализация Telegram управления
 export const initializeTelegramBot = (): void => {
-  Logger.info(`${pc.green("[Telegram]")} || Telegram бот с меню запущен.`);
+  
 };

@@ -84,7 +84,6 @@ export const initializeSTV = async (): Promise<void> => {
   try {
     await createEventSource();
     addListener();
-    Logger.info(`${pc.green("[STV]")} || Successfully connect SevenTV 🟢`);
   } catch (error) {
     Logger.error(`${pc.red("[STV ERROR]")} || Error: ${(error as Error).message}`);
     handleError("[STV ERROR]", error);
