@@ -1,6 +1,6 @@
 import { query } from "./Database";
 import { Logger } from "./Logger";
-import { logError } from "../utils/Utils";
+import { logError } from "@utils/Utils";
 import type { channelLogs } from "../types";
 import pc from "picocolors";
 

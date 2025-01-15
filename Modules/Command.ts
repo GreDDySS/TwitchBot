@@ -1,6 +1,6 @@
 import { SayError } from "@kararty/dank-twitch-irc";
 import pc from "picocolors";
-import { bot, client } from "../Clients/Twitch";
+import { bot, client } from "@clients/Twitch";
 import { Logger } from "./Logger";
 const LENGTH_LIMIT = 400;
 

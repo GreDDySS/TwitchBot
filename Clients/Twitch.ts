@@ -1,17 +1,17 @@
 import { AlternateMessageModifier, SlowModeRateLimiter, ChatClient, LoginError, JoinError, SayError, PrivmsgMessage} from '@kararty/dank-twitch-irc';
 import pc from "picocolors";
-import { query } from '../Modules/Database';
-import { Logger } from '../Modules/Logger';
-import { Channel } from '../Database/Channel';
+import { query } from '@modules/Database';
+import { Logger } from '@modules/Logger';
+import { Channel } from '@database/Channel';
 import { config } from '../Config/config';
 import type { cmdData, Bot } from '../types'
-import { Users } from '../Database/Users'
-import { getCommand, loadCommands } from '../Modules/LoadCommand'
-import { checkCooldown } from '../utils/Cooldown'
-import {send, sendError, sendCommand} from "../Modules/Command"
-import { Stats } from '../Database/Stats';
-import { formatTimestamp, humanizeDuration, isJSON, logError, random, randomArg, randomConnectEmote, timeDelta, uptime } from "../utils/Utils";
-import {logMessage } from '../Modules/LogsService'
+import { Users } from '@database/Users'
+import { getCommand, loadCommands } from '@modules/LoadCommand'
+import { checkCooldown } from '@utils/Cooldown'
+import {send, sendError, sendCommand} from "@modules/Command"
+import { Stats } from '@database/Stats';
+import { formatTimestamp, humanizeDuration, isJSON, logError, random, randomArg, randomConnectEmote, timeDelta, uptime } from "@utils/Utils";
+import {logMessage } from '@modules/LogsService'
 
 
 const client = new ChatClient({

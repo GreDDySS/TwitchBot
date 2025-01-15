@@ -1,9 +1,9 @@
 import TelegramBot, { type  InlineKeyboardMarkup } from 'node-telegram-bot-api';
-import pc from "picocolors";
-import { Logger } from '../Modules/Logger';
-import { Stats } from '../Database/Stats';
-import { Scheduler } from '../Modules/Scheduler';
+import { Logger } from '@modules/Logger';
+import { Scheduler } from '@modules/Scheduler';
+import { Stats } from '@database/Stats';
 import { config } from '../Config/config';
+import pc from "picocolors";
 
 const ADMIN_CHAT_ID = config.telegram.adminChatId;
 const bot = new TelegramBot(config.telegram.token, { polling: true });

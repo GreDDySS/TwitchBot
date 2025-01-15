@@ -1,8 +1,8 @@
 import { EventSource } from "eventsource";
 import pc from "picocolors";
-import { Logger } from "../Modules/Logger";
-import { Channel } from "../Database/Channel";
-import { bot } from "./Twitch";
+import { Logger } from '@modules/Logger';
+import { Channel } from '@database/Channel';
+import { bot } from '@clients/Twitch';
 
 const MAIN_URL = "https://events.7tv.io/v3@";
 let source: EventSource | null = null;

@@ -1,8 +1,8 @@
-import { query } from "../Modules/Database";
-import { Logger } from "../Modules/Logger";
+import { query } from "@modules/Database";
+import { Logger } from "@modules/Logger";
 import pc from "picocolors";
 import type { cmdData } from "../types"
-import { bot } from "../Clients/Twitch"
+import { bot } from "@clients/Twitch"
 
 export class Users {
   /**

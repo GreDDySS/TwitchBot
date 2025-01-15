@@ -1,8 +1,8 @@
 import humanize from "humanize-duration";
 import pc from "picocolors";
-import { query } from "../Modules/Database";
-import { Logger } from "../Modules/Logger"
-import { bot } from "../Clients/Twitch"
+import { query } from "@modules/Database";
+import { Logger } from "@modules/Logger"
+import { bot } from "@clients/Twitch"
 
 // **Настройка короткого формата для humanize-duration**
 const shortHumanize = humanize.humanizer({

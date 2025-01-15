@@ -1,4 +1,4 @@
-import { query } from "../Modules/Database";
+import { query } from "@modules/Database";
 
 export class Channel {
   static async getByID(userID: string) {

@@ -2,7 +2,7 @@ import schedule, {Job} from 'node-schedule';
 import pc from 'picocolors';
 import { Logger } from './Logger';
 import type { Task } from '../types';
-import { bot } from '../Clients/Twitch'
+import { bot } from '@clients/Twitch'
 
 export class Scheduler {
   private static jobs: Map<string, Job> = new Map();

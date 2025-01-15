@@ -1,6 +1,6 @@
-import { Logger } from "../Modules/Logger"
+import { Logger } from "@modules/Logger"
 import type { cmdData, Bot } from "../types"
-import { Channel } from "../Database/Channel"
+import { Channel } from "@database/Channel"
 
 const ping = {
   name: 'ping',

@@ -3,8 +3,8 @@ import * as cheerio from "cheerio";
 import fs from "fs/promises";
 import path from "path";
 import pc from "picocolors";
-import { Logger } from "../Modules/Logger";
-import { bot } from "../Clients/Twitch"
+import { Logger } from "@modules/Logger";
+import { bot } from "@clients/Twitch"
 
 // URL для парсинга
 const urlMy = "https://my-calend.ru/holidays";

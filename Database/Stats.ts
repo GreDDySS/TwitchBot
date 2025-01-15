@@ -1,10 +1,10 @@
-import { bot } from "../Clients/Twitch"
-import { query } from "../Modules/Database";
-import { Logger } from "../Modules/Logger";
+import { bot } from "@clients/Twitch"
+import { query } from "@modules/Database";
+import { Logger } from "@modules/Logger";
 import type { channelStats } from "../types";
 import pc from "picocolors"
-import { uptime } from "../utils/Utils"
-import { broadcast } from "../Modules/WebSocket"
+import { uptime } from "@utils/Utils"
+import { broadcast } from "@modules/WebSocket"
 
 const buffer: Record<string, channelStats> = {};
 const flushInterval = 5000 // 5 seconds
