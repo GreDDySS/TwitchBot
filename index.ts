@@ -7,6 +7,7 @@ import { initializeTelegramBot } from '@clients/Telegram';
 import pc from "picocolors";
 import util from "util";
 import { subscribeToStreamEvents } from '@clients/PubSub'
+import { getListCelebration } from './utils'
 
 Scheduler.addTask({
   name: "UpdateCelebrations",
@@ -40,6 +41,7 @@ Scheduler.addTask({
     await subscribeToStreamEvents()
     Logger.info(`${pc.green("[PUBSUB]")} || Subscribed to stream events! 🟢`);
 
+    await getListCelebration()
 
     Logger.info(`${pc.green("[BOT]")} || Bot started! ⚡⚡⚡`)
     console.log("<"+"=".repeat(50)+ ">")
