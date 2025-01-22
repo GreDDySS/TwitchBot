@@ -8,10 +8,7 @@ import { handleError } from "@utils/errorHandler"
 const MAIN_URL = "https://events.7tv.io/v3@";
 let source: EventSource | null = null;
 
-const buffer = {
-  pushed: [] as string[],
-  pulled: [] as string[],
-}
+const buffer: Record<string, { pushed: string[], pulled: string[]}> = {};
 
 const createEventSource = async (): Promise<void> => {
   const channels = await Channel.getSevenTV();
@@ -26,19 +23,29 @@ const handleEvent = async (e: MessageEvent): Promise<void> => {
     const data = JSON.parse(e.data);
     const channels = await Channel.getSevenUsername(data.body.id);
 
+    if (!channels || channels.length === 0) return;
+
+    const channelId = channels[0];
+
+    if (!buffer[channelId]) {
+      buffer[channelId] = { pushed: [], pulled: [] };
+    }
+
+    const channelBuffer = buffer[channelId];
+
     if (data.body.pushed) {
-      buffer.pushed.push(data.body.pushed[0].value.name);
+      channelBuffer.pushed.push(data.body.pushed[0].value.name);
     }
 
     if (data.body.pulled) {
-      buffer.pulled.push(data.body.pulled[0].old_value.name);
+      channelBuffer.pulled.push(data.body.pulled[0].old_value.name);
     }
 
     if (data.body.updated) {
       const oldName = data.body.updated[0].old_value.name;
       const newName = data.body.updated[0].value.name;
       bot.CommandUtils.sendCommand(
-        channels[0],
+        channelId,
         `/me [7TV] - Изменили эмоут ${oldName} на ${newName}`
       );
     }
@@ -46,21 +53,20 @@ const handleEvent = async (e: MessageEvent): Promise<void> => {
     // Интервал для отправки сообщений с изменениями
     const INTERVAL = 10 * 1000;
     setTimeout(async () => {
-      if (buffer.pulled.length > 0) {
-        const emotesPulled = buffer.pulled.join(", ");
+      if (channelBuffer.pulled.length > 0) {
+        const emotesPulled = channelBuffer.pulled.join(", ");
         bot.CommandUtils.sendCommand(
-          channels[0],
+          channelId,
           `/me [7TV] - Убрали эмоуты: ${emotesPulled}`
         );
-        buffer.pulled = [];
-      } else if (buffer.pushed.length > 0) {
-        const emotesPushed = buffer.pushed.join(", ");
-        console.log(channels[0]);
+        channelBuffer.pulled = [];
+      } else if (channelBuffer.pushed.length > 0) {
+        const emotesPushed = channelBuffer.pushed.join(", ");
         bot.CommandUtils.sendCommand(
-          channels[0],
+          channelId,
           `/me [7TV] - Добавили эмоуты: ${emotesPushed}`
         );
-        buffer.pushed = [];
+        channelBuffer.pushed = [];
       }
     }, INTERVAL);
   } catch (error) {
