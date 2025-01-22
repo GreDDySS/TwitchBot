@@ -8,7 +8,7 @@ const addAnnounce = {
   description: 'Add a new announcement',
   aliases: [],
   cooldown: 5000,
-  permissions: ['broadcaster'],
+  permissions: ['admin'],
   active: true,
   execute: async (commandData: cmdData, client: Bot) => {
     const [text, timer] = commandData.message.args.slice(1);
