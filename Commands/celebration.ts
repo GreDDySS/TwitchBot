@@ -20,8 +20,9 @@ const celebration = {
       const num = bot.Utils.random(data.length);
       const holiday = data[num - 1];
 
+      console.log(commandData.message.args[1])
       // Обработка специального условия для пользователя "iamplugg"
-      if (commandData.message.args[0] === 'тык' && commandData.channel === 'iamplugg') {
+      if (commandData.message.args[1] === 'тык' && commandData.channel === 'iamplugg') {
         await client.CommandUtils.send(
           commandData.channel,
           `${userList} Сегодняшний праздник: ${holiday}`
@@ -30,7 +31,7 @@ const celebration = {
       }
 
       // Обработка аргумента "info"
-      if (commandData.message.args[0] === 'info') {
+      if (commandData.message.args[1] === 'info') {
         await client.CommandUtils.send(
           commandData.channel,
           `Сегодняшний праздник: ${holiday} — ${num} из ${data.length}`
