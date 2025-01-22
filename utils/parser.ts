@@ -1,4 +1,4 @@
-import axios from "axios";
+import rp from 'request-promise'
 import * as cheerio from "cheerio";
 import fs from "fs/promises";
 import path from "path";
@@ -11,7 +11,6 @@ const urlMy = "https://my-calend.ru/holidays";
 
 // Типизация для списка праздников
 type Celebration = string[];
-
 /**
  * Асинхронная функция для получения списка праздников.
  * Парсит сайт и сохраняет данные в JSON-файл.
@@ -19,15 +18,19 @@ type Celebration = string[];
 export const getListCelebration = async (): Promise<void> => {
   try {
     const celebration: Celebration = [];
-    const { data: html } = await axios.get(urlMy);
-    const $ = cheerio.load(html);
-    const regex = /^\d*\n*|\n*\d*$/gm;
+    await rp(urlMy).then(html => {
+      const $ = cheerio.load(html);
+      const regex = /^\d*\n*|\n*\d*$/gm;
+      for (let i = 0; i < 1; i++) {
+        $(`article > section:nth-child(4) > ul > li`).each((i, elem) => {
+          celebration.push(`${$(elem).text().replace(regex, "").trim()}`)
+        });
+      }
 
-    $(`article > section:nth-child(5) > ul > li`).each((_i, elem) => {
-      celebration.push($(elem).text().replace(regex, "").trim());
-    });
+    })
+    
 
-    const filePath = path.resolve(__dirname, "../../data/celebration.json");
+    const filePath = path.resolve(__dirname, "../data/celebration.json");
     await fs.writeFile(filePath, JSON.stringify(celebration, null, 2), {
       encoding: "utf-8",
     });
