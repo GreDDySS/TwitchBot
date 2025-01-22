@@ -20,7 +20,6 @@ const celebration = {
       const num = bot.Utils.random(data.length);
       const holiday = data[num - 1];
 
-      console.log(commandData.message.args[1])
       // Обработка специального условия для пользователя "iamplugg"
       if (commandData.message.args[1] === 'тык' && commandData.channel === 'iamplugg') {
         await client.CommandUtils.send(
