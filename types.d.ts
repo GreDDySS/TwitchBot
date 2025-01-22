@@ -56,6 +56,8 @@ type cmdDataMessage = {
   raw: string;
   text: string;
   args: string[];
+  subCommand: string;
+  subArgs: string[];
 };
 
 type command = {

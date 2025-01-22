@@ -125,6 +125,8 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
     return;
   }
 
+  const [mainCommand, subCommand, ...subArgs] = commandString.split(' ');
+
   const commandData: cmdData = {
     user: {
       id: msg.senderUserID,
@@ -137,6 +139,8 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
       raw: msg.rawSource,
       text: message,
       args: args,
+      subCommand: subCommand,
+      subArgs: subArgs,
     },
     type: type,
     command: command,
@@ -145,6 +149,7 @@ const handleUserMessage = async (msg: PrivmsgMessage) => {
     channelMeta: channelMeta,
     userState: msg.ircTags,
   };
+
 
   await Users.addOrUpdateUser(commandData);
   await logMessage(commandData.channelId, commandData.user.name, commandData.message.text, commandData.user.color, msg.badges?.join(", "));
