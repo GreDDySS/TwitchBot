@@ -1,213 +1,125 @@
-# GreDDBot
+# GreDDBot V2 🤖
 
-GreDDBot - это многофункциональный бот для Twitch, который предоставляет возможности для управления чатом, отслеживания статистики, работы с эмодзи (7TV) и управления через Telegram. Бот написан на TypeScript и использует PostgreSQL для хранения данных.
+A modern, high-performance Twitch Bot rewritten from scratch using **Bun**, **Twurple**, and **React Ink** (TUI).
 
-## 🚀 Особенности
+![Status](https://img.shields.io/badge/Status-Active-success)
+![Stack](https://img.shields.io/badge/Stack-Bun_Typescript_Prisma-blue)
 
-- Интеграция с Twitch IRC с поддержкой множества каналов
-- Система команд с поддержкой алиасов и прав доступа
-- Система cooldown для команд с настраиваемыми интервалами
-- Продвинутая система логирования с использованием Winston
-- Хранение данных в PostgreSQL с буферизацией статистики
-- Поддержка эмотов через интеграцию с 7TV
-- Система автоматических сообщений
-- Интеграция с Telegram
-- Гибкая система прав доступа (модератор, VIP, пользователь)
-- Сбор и хранение статистики сообщений и команд
-- Поддержка настраиваемых префиксов команд для каждого канала
+## ✨ Key Features
 
-## 📋 Требования
+- **⚡ Blazing Fast**: Powered by [Bun](https://bun.sh) runtime.
+- **🖥️ TUI Dashboard**: Real-time console interface with [Ink](https://github.com/vadimdemedes/ink) showing uptime, stats, and logs.
+- **🔐 Smart Auth**: Built-in local OAuth server. No need to manually generate tokens—just log in via browser once.
+- **🐘 Database**: Fully typed [Prisma Client](https://www.prisma.io/) with PostgreSQL (Supabase support).
+- **🛡️ Secure**: Environment variables validaton via [Zod](https://zod.dev).
+- **🛠️ Modular**: Clean architecture with separated Command Handlers, Events, and Services.
 
-- [Bun](https://bun.sh) v1.1.42 или выше
-- PostgreSQL
-- Node.js для некоторых зависимостей
-- Twitch Developer Application
-- Telegram Bot Token (опционально)
+## 🛠️ Tech Stack
 
-## ⚙️ Установка и запуск
+- **Runtime**: Bun
+- **Language**: TypeScript
+- **Twitch API**: `@twurple/auth`, `@twurple/chat`, `@twurple/api`
+- **Database**: PostgreSQL + Prisma ORM 7
+- **UI**: Ink (React for CLI)
+- **CLI Args**: Meow
+- **Logging**: Winston
 
-1. Клонируйте репозиторий:
+## 🚀 Getting Started
+
+### Prerequisites
+- [Bun](https://bun.sh) installed.
+- PostgreSQL Instance (e.g., Supabase or local).
+- Twitch Application created in [Twitch Dev Console](https://dev.twitch.tv/console).
+  - **Redirect URI**: `http://localhost:3000/auth`
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repo-url>
+   cd GreDDBot
+   ```
+
+2. **Install dependencies**
+   ```bash
+   bun install
+   ```
+
+3. **Configure Environment**
+   Create a `.env` file in the root directory:
+   ```env
+   # Twitch API
+   TWITCH_CLIENT_ID=your_client_id
+   TWITCH_CLIENT_SECRET=your_client_secret
+   TWITCH_CHANNELS=channel1,channel2
+   BOT_USERNAME=YourBotName
+   BOT_ID=123456789
+
+   # Database (Supabase Transaction Mode suggested)
+   DB_URL="postgres://user:pass@host:5432/db"
+
+   # Telegram (Optional)
+   TELEGRAM_TOKEN=...
+   TELEGRAM_ADMIN_ID=...
+   ```
+
+4. **Setup Database**
+   Push the schema to your database:
+   ```bash
+   bunx prisma db push
+   ```
+
+### 🏃‍♂️ Running the Bot
+
+**Development Mode** (Hot Reload):
 ```bash
-git clone [url-репозитория]
-cd greddbot
-```
-
-2. Установите зависимости:
-```bash
-bun install
-```
-
-3. Создайте файл `.env` и заполните необходимые переменные:
-```env
-# Twitch
-TTV_TOKEN=oauth:your_token
-TTV_BEARER=your_bearer_token
-TTV_CLIENTID=your_client_id
-TTV_SECRET=your_client_secret
-BOT=bot_username
-TTV_CHANNEL=main_channel
-PREFIX=!
-
-# Telegram
-TG_TOKEN=your_telegram_token
-
-# Database
-DB_HOST=db-host
-DB_PORT=db-post || 5432
-DB_NAME=db-name
-DB_USER=db-user
-DB_PASS=db-password
-```
-
-4. Настройте базу данных, создав необходимые таблицы:
-# public
-- `Channels` - информация о каналах
-- `Users` - информация о пользователях
-- `Stats` - статистика сообщений и команд
-- `LogError` - ошибки в работе бота
-- `Anonnces` - сообщение при старте стрима и др
-# Logs
-- `channel_{channelId}` - Информация об отправленных сообщений ползователями.
-
-## 🚀 Запуск
-
-```bash
-# Запуск бота
-bun run start
-
-# Режим разработки
 bun run dev
-
-# Сборка проекта
-bun run build
-
-# Проверка кода
-bun run lint
-
-# Запуск тестов
-bun run test
 ```
 
-## 📦 Структура проекта
-
-```
-/project-root
-├── clients/              # Клиенты для различных API
-│   ├── Twitch.ts         # Twitch IRC клиент
-│   ├── SevenTV.ts        # 7TV интеграция
-│   ├── Telegram.ts       # Telegram бот
-│   └── PubSub.ts         # Twitch PubSub
-├── commands/             # Команды чата
-├── config/               # Конфигурация
-│   ├── config.ts         # Основные настройки
-│   └── settings.ts       # Глобальные параметры
-├── modules/              # Основные модули
-│   ├── Command.ts        # Обработка команд
-│   ├── Database.ts       # Работа с БД
-│   ├── Logger.ts         # Система логирования
-│   ├── LoadCommand.ts    # Загрузка команд
-│   ├── APITwitch.ts      # Запросы к Twitch API        
-│   ├── LogsService.ts    # Логирование сообщений чата в БД
-│   ├── Scheduler.ts      # Планировщик задач
-│   └── WebSocket.ts      # Взаимодействие с клиентами
-├── database/             # Работа с базой данных
-│   ├── Channel.ts        # Управление каналами
-│   ├── Stats.ts          # Статистика
-│   └── Users.ts          # Управление пользователями
-└── utils/                # Вспомогательные функции
-    ├── Cooldown.ts       # Система задержек
-    └── parser.ts         # Парсинг данных
+**Production Mode** (TUI Enabled):
+```bash
+bun start
 ```
 
-## 📝 Создание команд
+**Headless Mode** (No UI, best for Docker/Logs):
+```bash
+bun run start:headless
+```
 
-Создайте новый файл в директории `commands/` со следующей структурой:
+## 📂 Project Structure
+
+```
+├── Auth/           # OAuth logic & Token management
+├── Clients/        # Twurple instances (Chat, API)
+├── Config/         # Zod schemas for .env
+├── Database/       # Prisma Client wrapper & Repositories
+├── Handlers/       # Command parsing & execution logic
+├── Interfaces/     # Types & Interfaces
+├── ui/             # React Ink components (Dashboard, Logs)
+├── Utils/          # Loggers, Senders, Stores
+├── commands/       # Command files (e.g. ping.ts)
+└── index.tsx       # Entry point
+```
+
+## 🎮 Writing Commands
+
+Create a file in `commands/` (e.g. `hello.ts`):
 
 ```typescript
-import { cmdData, Bot } from '../types';
+import { ICommand } from "../Interfaces/types";
 
 export default {
-  name: 'commandname',     // Имя команды
-  aliases: ['cmd', 'cm'],  // Алиасы
-  description: 'Command description',
-  cooldown: 5000,         // Задержка в мс
-  permissions: ['user'],   // Права доступа
-  active: true,           // Активна ли команда
-  async execute(context: cmdData, client: Bot) {
-    const { channel, user, message } = context;
-    await client.CommandUtils.send(channel, `Hello, ${user.name}!`);
-  }
-};
+    name: "hello",
+    aliases: ["hi"],
+    description: "Says hello back",
+    permission: "chatter", // chatter | mod | broadcaster
+    cooldown: 5,
+
+    async execute({ reply, user }) {
+        await reply(`Hello, @${user}! 👋`);
+    }
+} as ICommand;
 ```
 
-## 🔒 Права доступа
-
-Система поддерживает следующие уровни доступа:
-- `broadcaster` - Владелец канала
-- `moderator` - Модератор
-- `vip` - VIP пользователь
-- `chatter` - Обычный пользователь
-
-## 📊 Статистика
-
-Бот автоматически собирает статистику:
-- Количество сообщений в канале
-- Использование команд
-- Активность пользователей
-
-Данные буферизируются и сохраняются в базу данных каждые 5 секунд для оптимизации производительности.
-
-## 💡План улучшений
-
-🟥 - Высокий приоритет
-🟨 - Средний приоритет
-🟩 - низкий приоритет
-
-### 1. 🟥 Рефакторинг и оптимзация кода
-- [x] - Создание barrel-файлов (реэкспорт)
-- [x] - Уменьшение логирование
-- [x] - Мспользовать TypeScript Path Aliases
-
-### 2. 🟥 Улучшение обработки ошибок и логирование
-- [x] - Детальное логирование
-
-### 3. 🟨 Улучшение команд и их управление
-- [ ] - Динамическая перезагрузка команд
-- [ ] - Поддержка подкоманд и аргументов
-- [ ] - Добавление новых команд
-
-### 4. 🟨 Масштабируемость и производительность
-- [ ] - Использование Redis для очереди
-- [ ] - Оптимизация запросов к БД
-- [ ] - Health Checks
-
-### 5. 🟩 Документация и тестирование
-- [ ] - Создание документации
-- [ ] - Добавление unit-тестов
-- [ ] - Настройка CI/CD
-
-### 6. 🟩Дополнительные улучшения
-- [ ] - Интеграция с внешними API
-- [ ] - Улучшение интерфейса Telegram бота
-- [ ] - Поддержка плагинов
-- [ ] - Мультиязычность
-- [ ] - Интеграция с аналитикой
-- [ ] - Веб управление
-- [ ] - Автоматическое обновление
-
-## 🤝 Содействие
-
-1. Сделайте форк репозитория
-2. Создайте ветку для новой функции (`git checkout -b feature/amazing-feature`)
-3. Зафиксируйте изменения (`git commit -m 'Add amazing feature'`)
-4. Отправьте изменения в ваш форк (`git push origin feature/amazing-feature`)
-5. Откройте Pull Request
-
-## 📄 Лицензия
-
-- Этот проект лицензирован под лицензией MIT. Подробности см. в файле [LICENSE](LICENSE).
-
-## ⭐ Благодарности
-
-- [@kararty/dank-twitch-irc](https://github.com/kararty/dank-twitch-irc) за отличную библиотеку для работы с Twitch IRC
-- [Bun](https://bun.sh) за быстрый JavaScript runtime
+## 📄 License
+MIT
