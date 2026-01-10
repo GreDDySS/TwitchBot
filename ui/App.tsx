@@ -17,29 +17,22 @@ const App: React.FC<AppProps> = ({config}) => {
     })
 
     return (
-        <Box flexDirection="column" height={20}>
-			{/* Шапка */}
+        <Box flexDirection="column">
+
 			<Box borderStyle="round" borderColor="green">
 				<Text color="green" bold> GreDDBot v2.0 </Text>
 				<Text> | </Text>
 				<Text > Status: <Text color="green">Online 🟢</Text> </Text>
 			</Box>
 
-			{/* Вкладки */}
 			<Box>
 				<Tab name="Dashboard" isActive={activeTab === 'dashboard'} />
 				<Tab name="Logs" isActive={activeTab === 'logs'} />
 			</Box>
 
-			{/* Контент */}
 			<Box borderStyle="round" padding={1} flexGrow={1}>
 				{activeTab === 'dashboard' && <Dashboard />}
 				{activeTab === 'logs' && <Logs />}
-			</Box>
-			
-			{/* Подвал */}
-			<Box>
-				<Text dimColor>Press 'q' to quit | 'Tab' to switch views</Text>
 			</Box>
 		</Box>
     )
