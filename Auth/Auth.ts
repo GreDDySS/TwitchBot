@@ -16,7 +16,7 @@ interface StoredToken {
 }
 
 async function ensureDir() {
-    await fs.mkdir(DATA_DIR, {recursive: true});
+    await fs.mkdir(DATA_DIR, { recursive: true });
 }
 
 async function loadTokens(): Promise<StoredToken | null> {
@@ -51,20 +51,19 @@ authProvider.onRefresh(async (userId, newTokenData) => {
     }
 });
 
-
-
-export async function iniitializeAuth() {
+export async function initializeAuth() {
     await ensureDir();
 
     const stored = await loadTokens();
 
     if (stored) {
         try {
-            authProvider.addUser(config.twitch.botId, stored, ["chat"]);
+            // Ensure botId is string
+            authProvider.addUser(config.twitch.botId.toString(), stored, ["chat"]);
             Logger.info("[AUTH] ✅ Tokens loaded from file.");
             return;
         } catch (err) {
-            Logger.warn("[AUTH] Failed to add user from stored tokens, will re-auntificate ", err);
+            Logger.warn("[AUTH] Failed to add user from stored tokens, will re-authenticate ", err);
         }
     }
 
@@ -100,7 +99,7 @@ export async function iniitializeAuth() {
         async fetch(req) {
             const url = new URL(req.url);
 
-            if(url.pathname !== "/auth"){
+            if (url.pathname !== "/auth") {
                 return new Response("404 Not Found", { status: 404 });
             }
 
@@ -117,7 +116,7 @@ export async function iniitializeAuth() {
                     redirectUri
                 );
 
-                authProvider.addUser(config.twitch.botId, tokenData, ["chat"]);
+                authProvider.addUser(config.twitch.botId.toString(), tokenData, ["chat"]);
 
                 await saveTokens(tokenData as StoredToken);
 
@@ -129,17 +128,17 @@ export async function iniitializeAuth() {
                     "Success! You can close this tab and check the console.",
                     { status: 200 }
                 );
-            
+
             } catch (err: any) {
-                Logger.error("[AUTH] ❌ Error exchaging code: ", err);
-                return new Response(`Error: ${err.message}`, {status: 500});
+                Logger.error("[AUTH] ❌ Error exchanging code: ", err);
+                return new Response(`Error: ${err.message}`, { status: 500 });
             }
         }
     })
 
     await new Promise<void>((resolve) => {
         const interval = setInterval(async () => {
-            if (authProvider.hasUser(config.twitch.botId)){
+            if (authProvider.hasUser(config.twitch.botId.toString())) {
                 clearInterval(interval);
                 resolve()
             }
