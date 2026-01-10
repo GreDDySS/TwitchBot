@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+    id          String      @id
+    username    String      @unique
+    displayName String
+    color       String      @default("#FFFFFF")
+    messages    Int         @default(0)
+
+    logs        MessageLog[]
+}
+
+model MessageLog {
+    id        Int      @id @default(autoincrement())
+    text      String
+    badges    String[] 
+    color     String?
+    createdAt DateTime @default(now())
+    
+    channelId String
+    channel   Channel  @relation(fields: [channelId], references: [id])
+
+    userId    String
+    user      User     @relation(fields: [userId], references: [id])
+
+    @@index([channelId, createdAt])
+    @@index([userId])
+}
+
+model Channel {
+    id                 String   @id
+    username           String   @unique
+    joinedDate         DateTime @default(now())
+    role               String   @default("Chatter")
+    prefix             String   @default("`")
+    listenStreamStatus Boolean  @default(false)
+    sevenTVEvents      Boolean  @default(false)
+    sevenID            String?
+    logging            Boolean  @default(true)
+
+    logs      MessageLog[]
+    stats     Stats[]
+    announces Announce[]
+}
+
+model LogError {
+    id      Int      @id @default(autoincrement())
+    name    String
+    message String
+    stack   String?
+    date    DateTime @default(now())
+}
+
+model Stats {
+    id           Int      @id @default(autoincrement())
+    messages     Int      @default(0)
+    commandsUsed Int      @default(0)
+    updatedAt    DateTime @updatedAt
+    
+    channelId    String
+    channel      Channel @relation(fields: [channelId], references: [id])
+}
+
+model Announce {
+  id        Int    @id @default(autoincrement())
+  text      String
+  eventName String
+  timer     Int
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id])
+}
