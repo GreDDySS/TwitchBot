@@ -34,6 +34,7 @@ chatClient.onMessage(async (channel: string, user: string, text: string, msg: Ch
         const brdID = msg.channelId!;
         const { data: [follow] } = await apiClient.channels.getChannelFollowers(brdID, msg.userInfo.userId);
 
+
         if (follow) {
 			const currentTimestamp = Date.now();
 			const followStartTimestamp = follow.followDate.getTime();
