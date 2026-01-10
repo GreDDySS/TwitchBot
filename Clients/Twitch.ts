@@ -8,12 +8,16 @@ import { CommandHandler } from "../Handlers/CommandHandler";
 import config from "../Config/config";
 import path from "path";
 import { statsStore } from "../Utils/StatsStore";
+import { CreateOrUpdateUser, incrementUserMessages } from "../Database/Users";
+import { createMessageLog } from "../Database/Logs";
+import { RuntimeConfig } from "../Config/RuntimeConfig";
 
 
 const apiClient = new ApiClient({ authProvider })
 
 const channelsNames = await getAllChannels().then((channel) => {
     statsStore.setModuleStatus('Database', 'online')
+    statsStore.setChannelCount(channel.length)
     return channel.map(c => c.username)
 })
 
@@ -40,6 +44,28 @@ chatClient.onMessage(async (channel: string, user: string, text: string, msg: Ch
     if (user === config.twitch.botUsername) return;
     statsStore.incrementMessage()
 
+    if (!RuntimeConfig.disableDbWrites) {
+        await CreateOrUpdateUser(
+            msg.userInfo.userId, 
+            msg.userInfo.userName, 
+            msg.userInfo.displayName, 
+            msg.userInfo.color
+        );
+    
+        await incrementUserMessages(
+            msg.userInfo.userId
+        )
+    
+        await createMessageLog(
+            text,
+            msg.channelId!,
+            msg.userInfo.userId,
+            Array.from(msg.userInfo.badges.keys()),
+            msg.userInfo.color
+        )
+    }
+    
+
     await CommandHandler.handleMessage({ 
         channel, user, text, msg, args: [],
         send: async () => {},
@@ -57,7 +83,6 @@ export const startTwitch = async () => {
         await chatClient.connect();
     }
     catch (e) {
-        // console.error("[Twitch] Failed to connect: ", e)
         Logger.error("[Twitch] Failed to connect: ", e)
     }
 }
