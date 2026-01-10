@@ -1,10 +1,12 @@
 import winston from "winston";
 import Transport from "winston-transport"
 import { logStore } from "./LogStore";
+import { statsStore } from "./StatsStore";
 
 
 class InkTransport extends Transport {
    override log(info: any, callback: () => void) {
+    statsStore.incrementError();
     logStore.addLog(info);
     callback();
   }
