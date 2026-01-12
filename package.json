@@ -9,7 +9,7 @@
     "start:headless": "bun run index.tsx --no-ui",
     "db:push": "bunx prisma db push",
     "db:studio": "bunx prisma studio",
-    "postintstall": "bunx prisma generate"
+    "postinstall": "bunx prisma generate"
   },
   "devDependencies": {
     "@types/bun": "^1.3.5",

@@ -11,15 +11,28 @@ import { statsStore } from "../Utils/StatsStore";
 import { CreateOrUpdateUser, incrementUserMessages } from "../Database/Users";
 import { createMessageLog } from "../Database/Logs";
 import { RuntimeConfig } from "../Config/RuntimeConfig";
+import { sleep } from 'bun';
 
 
 const apiClient = new ApiClient({ authProvider })
 
-const channelsNames = await getAllChannels().then((channel) => {
-    statsStore.setModuleStatus('Database', 'online')
-    statsStore.setChannelCount(channel.length)
-    return channel.map(c => c.username)
-})
+let channelsNames: string[] = [];
+let retries = 0;
+const MAX_RETRIES = 5;
+const RETRY_DELAY = 5000;
+
+
+try {
+    const channelsDB = await getAllChannels();
+    statsStore.setModuleStatus('Database', 'online');
+    statsStore.setChannelCount(channelsDB.length);
+    channelsNames = channelsDB.map(c => c.username);
+} catch (error) {
+    Logger.error("[TWITCH] Failed to laod channels from DB:", error);
+    statsStore.setModuleStatus('Database', 'error');
+    Logger.warn(`[TWITCH] Using fallback channels from config: ${config.twitch.channels}`)
+    channelsNames = config.twitch.channels
+}
 
 export const chatClient = new ChatClient({
     authProvider,
@@ -56,13 +69,18 @@ chatClient.onMessage(async (channel: string, user: string, text: string, msg: Ch
             msg.userInfo.userId
         )
     
-        await createMessageLog(
-            text,
-            msg.channelId!,
-            msg.userInfo.userId,
-            Array.from(msg.userInfo.badges.keys()),
-            msg.userInfo.color
-        )
+        const channelId = msg.channelId;
+        if (channelId) {
+            await createMessageLog(
+                text,
+                channelId,
+                msg.userInfo.userId,
+                Array.from(msg.userInfo.badges.keys()),
+                msg.userInfo.color
+            );
+        } else {
+            Logger.warn(`[TWITCH] Message without channelId from ${user}`);
+        }
     }
     
 
@@ -78,11 +96,22 @@ export const startTwitch = async () => {
     await initializeAuth();
     statsStore.setModuleStatus('Twitch', 'loading');
 
-    try {
-        await CommandHandler.loadCommands(path.join(process.cwd(), "/commands"));
-        await chatClient.connect();
-    }
-    catch (e) {
-        Logger.error("[Twitch] Failed to connect: ", e)
+    while (retries < MAX_RETRIES) {
+        try {
+            await CommandHandler.loadCommands(path.join(process.cwd(), "/commands"));
+            await chatClient.connect();
+            statsStore.setModuleStatus('Twitch', 'online');
+            return;
+        } catch (e) {
+            retries++;
+            Logger.error(`[Twitch] Failed to connect (attempt ${retries}/${MAX_RETRIES}):`, e);
+            
+            if (retries >= MAX_RETRIES) {
+                statsStore.setModuleStatus('Twitch', 'error');
+                throw new Error(`Failed to connect after ${retries} attempts`);
+            }
+            
+            await sleep(RETRY_DELAY * retries);
+        }
     }
 }

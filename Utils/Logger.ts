@@ -8,7 +8,9 @@ import { RuntimeConfig } from "../Config/RuntimeConfig";
 
 class InkTransport extends Transport {
     override log(info: any, callback: () => void) {
-        statsStore.incrementError();
+        if (info.level === 'error') {
+            statsStore.incrementError();
+        }
         logStore.addLog(info);
         callback();
     }

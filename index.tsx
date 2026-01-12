@@ -3,9 +3,15 @@ import { render } from 'ink';
 import App from './ui/App';
 import config from './Config/config'
 import { RuntimeConfig } from './Config/RuntimeConfig';
-import { startTwitch } from './Clients/Twitch';
+import { startTwitch, chatClient } from './Clients/Twitch';
 import meow from "meow"
 import { sleep } from 'bun';
+import { prisma } from './Database';
+import { statsStore } from './Utils/StatsStore';
+import { Logger } from './Utils/Logger';
+
+let unmountFn: (() => void) | null = null;
+let isShuttingDown = false;
 
 const cli = meow(`
     Usage
@@ -33,31 +39,64 @@ const cli = meow(`
 }
 );
 
+async function gracefulShutdown(signal: string) {
+    if (isShuttingDown) return;
+    isShuttingDown = true;
+
+    Logger.info(`[SHUTDOWN] Received ${signal}, shutting down gracefully...`);
+    
+    try {
+        if (cli.flags.ui && unmountFn) {
+            unmountFn();
+        }
+        if (chatClient.isConnected) {
+            await chatClient.quit();
+        }
+
+        statsStore.destroy();
+        await prisma.$disconnect();
+
+        Logger.info("[SHUTDOWN] Graceful shutdown completed");
+        process.exit(0);
+    } catch (err) {
+        Logger.error("[SHUTDOWN] Error during shutdown:", err);
+        process.exit(1);
+    }
+}
+
 async function main() {
     RuntimeConfig.disableDbWrites = cli.flags.disableDbWrites;
     if (RuntimeConfig.disableDbWrites) {
         console.warn("\n[WARNING] 🛑 DATABASE WRITES ARE DISABLED! \n");
-        sleep(3000);
+        await sleep(3000);
     }
     
     console.clear()
 
     if (cli.flags.ui) {
         const { unmount } = render(<App config={config} />);
-
-
-        process.on("SIGINT", () => {
-            unmount();
-            process.exit(0);
-        })
+        unmountFn = unmount;
     } else {
-        console.log("Starting in Headles Mode (No UI)...");
+        console.log("Starting in Headless Mode (No UI)...");
     }
 
+    process.on("SIGINT", () => gracefulShutdown("SIGINT"));
+    process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+
+    process.on("unhandledRejection", (reason, promise) => {
+        Logger.error("[FATAL] Unhandled Rejection:", reason);
+        gracefulShutdown("unhandledRejection");
+    });
+
+    process.on("uncaughtException", (error) => {
+        Logger.error("[FATAL] Uncaught Exception:", error);
+        gracefulShutdown("uncaughtException");
+    });
+
     startTwitch().catch(err => {
-        console.error("Fatal Error: ", err)
-        process.exit(1);
-    })
+        Logger.error("Fatal Error: ", err);
+        gracefulShutdown("startupError");
+    });
 }
 
 main();

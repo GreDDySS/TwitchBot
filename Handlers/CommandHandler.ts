@@ -105,7 +105,8 @@ export class CommandHandler {
         const info = ctx.msg.userInfo;
         if (info.isBroadcaster) return true;
         if (required === "mod" && info.isMod) return true;
+        if (required === "broadcaster" && !info.isBroadcaster) return false;
         
-        return true;
+        return false;
     }
 }

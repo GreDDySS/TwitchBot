@@ -5,7 +5,7 @@ export type ModuleStatus = 'online' | 'offline' | 'error' | 'loading';
 class StatsStore extends EventEmitter {
     private startTime: number = Date.now();
     private uniqueUsers = new Set<string>();
-
+    private uptimeInterval?: ReturnType<typeof setInterval>;
 
     private stats = {
         messages: 0,
@@ -27,7 +27,14 @@ class StatsStore extends EventEmitter {
 
     constructor() {
         super();
-        setInterval(() => this.updateUptime(), 1000);
+        this.uptimeInterval = setInterval(() => this.updateUptime(), 1000);
+    }
+
+    destroy() {
+        if (this.uptimeInterval) {
+            clearInterval(this.uptimeInterval);
+            this.uptimeInterval = undefined;
+        }
     }
 
     incrementMessage() {
