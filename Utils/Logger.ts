@@ -2,7 +2,7 @@ import winston from "winston";
 import Transport from "winston-transport"
 import { logStore } from "./LogStore";
 import { statsStore } from "./StatsStore";
-import { createErrorLog } from "../Database/ErrorLogs";
+import { ErrorLogService } from "../Services/ErrorLogService";
 import { RuntimeConfig } from "../Config/RuntimeConfig";
 
 
@@ -27,7 +27,7 @@ class DatabaseErrorTransport extends Transport {
             const cleanMessage = moduleMatch ? moduleMatch[2] : info.message;
             
             if (!RuntimeConfig.disableDbWrites) {
-                createErrorLog(
+                ErrorLogService.create(
                     name,
                     cleanMessage,
                     stack

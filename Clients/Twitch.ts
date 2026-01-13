@@ -2,16 +2,16 @@ import { ChatClient, ChatMessage } from "@twurple/chat";
 import { ApiClient } from "@twurple/api";
 import { authProvider, initializeAuth } from "../Auth/Auth";
 import { Logger } from "../Utils/Logger";
-import { getAllChannels } from "../Database/Channel";
 import { Sender } from "../Utils/Sender";
 import { CommandHandler } from "../Handlers/CommandHandler";
 import config from "../Config/config";
 import path from "path";
 import { statsStore } from "../Utils/StatsStore";
-import { CreateOrUpdateUser, incrementUserMessages } from "../Database/Users";
-import { createMessageLog } from "../Database/Logs";
 import { RuntimeConfig } from "../Config/RuntimeConfig";
 import { sleep } from 'bun';
+import { UserService } from "../Services/UserService";
+import { MessageLogService } from "../Services/MessageLogService";
+import { ChannelService } from "../Services/ChannelService";
 
 
 const apiClient = new ApiClient({ authProvider })
@@ -23,12 +23,12 @@ const RETRY_DELAY = 5000;
 
 
 try {
-    const channelsDB = await getAllChannels();
+    const channelsDB = await ChannelService.getAll();
     statsStore.setModuleStatus('Database', 'online');
     statsStore.setChannelCount(channelsDB.length);
     channelsNames = channelsDB.map(c => c.username);
 } catch (error) {
-    Logger.error("[TWITCH] Failed to laod channels from DB:", error);
+    Logger.error("[TWITCH] Failed to load channels from DB:", error);
     statsStore.setModuleStatus('Database', 'error');
     Logger.warn(`[TWITCH] Using fallback channels from config: ${config.twitch.channels}`)
     channelsNames = config.twitch.channels
@@ -42,8 +42,9 @@ export const chatClient = new ChatClient({
     rejoinChannelsOnReconnect: true,
 })
 
+
 chatClient.onConnect(() => {
-    Sender.send("greddyss", "Lurk");
+    Sender.send(config.twitch.owner, "Lurk");
     statsStore.setModuleStatus('Twitch', 'online');
     Logger.info("[TWITCH] Connected to chat! 🟢");
 })
@@ -58,25 +59,21 @@ chatClient.onMessage(async (channel: string, user: string, text: string, msg: Ch
     statsStore.incrementMessage()
 
     if (!RuntimeConfig.disableDbWrites) {
-        await CreateOrUpdateUser(
+        await UserService.createOrUpdateWithMessage(
             msg.userInfo.userId, 
             msg.userInfo.userName, 
             msg.userInfo.displayName, 
             msg.userInfo.color
-        );
-    
-        await incrementUserMessages(
-            msg.userInfo.userId
         )
     
         const channelId = msg.channelId;
         if (channelId) {
-            await createMessageLog(
+            await MessageLogService.create(
                 text,
                 channelId,
                 msg.userInfo.userId,
                 Array.from(msg.userInfo.badges.keys()),
-                msg.userInfo.color
+                msg.userInfo.color || "#FFFFFF"
             );
         } else {
             Logger.warn(`[TWITCH] Message without channelId from ${user}`);
@@ -102,9 +99,9 @@ export const startTwitch = async () => {
             await chatClient.connect();
             statsStore.setModuleStatus('Twitch', 'online');
             return;
-        } catch (e) {
+        } catch (error: unknown) {
             retries++;
-            Logger.error(`[Twitch] Failed to connect (attempt ${retries}/${MAX_RETRIES}):`, e);
+            Logger.error(`[Twitch] Failed to connect (attempt ${retries}/${MAX_RETRIES}):`, error);
             
             if (retries >= MAX_RETRIES) {
                 statsStore.setModuleStatus('Twitch', 'error');
