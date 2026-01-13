@@ -12,6 +12,7 @@ import { sleep } from 'bun';
 import { UserService } from "../Services/UserService";
 import { MessageLogService } from "../Services/MessageLogService";
 import { ChannelService } from "../Services/ChannelService";
+import { MessageQueueService } from "../Services/MessageQueueService";
 
 
 const apiClient = new ApiClient({ authProvider })
@@ -68,7 +69,7 @@ chatClient.onMessage(async (channel: string, user: string, text: string, msg: Ch
     
         const channelId = msg.channelId;
         if (channelId) {
-            await MessageLogService.create(
+            await MessageQueueService.enqueue(
                 text,
                 channelId,
                 msg.userInfo.userId,
@@ -92,6 +93,8 @@ chatClient.onMessage(async (channel: string, user: string, text: string, msg: Ch
 export const startTwitch = async () => {
     await initializeAuth();
     statsStore.setModuleStatus('Twitch', 'loading');
+
+    MessageQueueService.start()
 
     while (retries < MAX_RETRIES) {
         try {

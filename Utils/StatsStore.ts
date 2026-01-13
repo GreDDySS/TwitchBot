@@ -14,6 +14,7 @@ class StatsStore extends EventEmitter {
         uptime: "00:00:00",
         channels: 0,
         dbQueries: 0,
+        redisQueries: 0,
         errors: 0,
         uniqueUsersCount: 0,
         modules: {
@@ -22,7 +23,7 @@ class StatsStore extends EventEmitter {
             SevenTV: 'offline' as ModuleStatus,
             Telegram: 'offline' as ModuleStatus,
             EventSub: 'offline' as ModuleStatus,
-            Redis: 'laoding' as ModuleStatus,
+            Redis: 'loading' as ModuleStatus,
         }
     };
 
@@ -55,6 +56,11 @@ class StatsStore extends EventEmitter {
 
     incrementError() {
         this.stats.errors++;
+        this.emitChange();
+    }
+
+    incrementRedisQuery() {
+        this.stats.redisQueries++;
         this.emitChange();
     }
 

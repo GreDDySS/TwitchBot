@@ -9,6 +9,8 @@ import { sleep } from 'bun';
 import { prisma } from './Database';
 import { statsStore } from './Utils/StatsStore';
 import { Logger } from './Utils/Logger';
+import { closeRedis, initRedis } from './Utils/Redis';
+import { MessageQueueService } from './Services/MessageQueueService';
 
 let unmountFn: (() => void) | null = null;
 let isShuttingDown = false;
@@ -54,8 +56,11 @@ async function gracefulShutdown(signal: string) {
             await chatClient.quit();
         }
 
+        MessageQueueService.stop();
+
         statsStore.destroy();
         await prisma.$disconnect();
+        await closeRedis();
 
         Logger.info("[SHUTDOWN] Graceful shutdown completed");
         process.exit(0);
@@ -73,6 +78,8 @@ async function main() {
     }
     
     console.clear()
+
+    await initRedis();
 
     if (cli.flags.ui) {
         const { unmount } = render(<App config={config} />);

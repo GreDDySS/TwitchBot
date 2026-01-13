@@ -6,6 +6,7 @@ import { Sender } from "../Utils/Sender";
 import { statsStore } from "../Utils/StatsStore";
 import { ChannelService } from "../Services/ChannelService";
 import config from "../Config/config"
+import { redis } from "../Utils/Redis";
 
 function parseArgs(text: string): string[] {
     if (text.length > 500) {
@@ -87,6 +88,22 @@ export class CommandHandler {
         }
     }
 
+    private static async isOnCooldown(commandName: string, userId: string, cooldownSeconds: number): Promise<boolean> {
+        const key = `cooldown:${commandName}:${userId}`;
+        try {
+            const exists = await redis.exists(key);
+            if (exists) {
+                return true;
+            }
+
+            await redis.setex(key, cooldownSeconds, 1);
+            return false;
+        } catch (err) {
+            Logger.warn("[CMD] Redis error, using fallback for cooldown:", err);
+            return false;
+        }
+    }
+
     static async handleMessage(ctx: CommandCtx) {
         const prefix = await ChannelService.getPrefix(ctx.msg.channelId!) || config.twitch.prefix;
 
@@ -108,7 +125,9 @@ export class CommandHandler {
         if (!this.checkPermission(ctx, command.permission)) return;
 
         const cooldownKey = `${command.name}-${ctx.user}`;
-        if (this.cooldowns.has(cooldownKey)) return;
+        if (command.cooldown && await this.isOnCooldown(command.name, ctx.user, command.cooldown)) {
+            return;
+        };
 
         try {
             await command.execute({
@@ -118,10 +137,6 @@ export class CommandHandler {
                 reply: (text) => Sender.reply(ctx.channel, text, ctx.msg.id)
             });
 
-            if (command.cooldown) {
-                this.cooldowns.add(cooldownKey);
-                setTimeout(() => this.cooldowns.delete(cooldownKey), command.cooldown * 1000);
-            }
             statsStore.incrementCommandUsage();
             Logger.info(`[EXEC] ${ctx.user} user ${prefix}${command.name}`);
         } catch (err: any) {
