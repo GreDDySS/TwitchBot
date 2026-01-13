@@ -20,7 +20,7 @@ const cli = meow(`
     Options
       --no-ui           Disable TUI (useful for Docker Logs)
       --help            Show this help
-      --no-db-writes    Disable all Database writes (Logs, Users, Error)
+      --disableDbWrites    Disable all Database writes (Logs, Users, Error)
     
     Examples
       $ bun run index.tsx --no-ui
@@ -33,7 +33,8 @@ const cli = meow(`
         },
         disableDbWrites: {
             type: 'boolean',
-            default: false
+            default: false,
+            
         }
     }
 }

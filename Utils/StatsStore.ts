@@ -21,7 +21,8 @@ class StatsStore extends EventEmitter {
             Database: 'loading' as ModuleStatus,
             SevenTV: 'offline' as ModuleStatus,
             Telegram: 'offline' as ModuleStatus,
-            EventSub: 'offline' as ModuleStatus
+            EventSub: 'offline' as ModuleStatus,
+            Redis: 'laoding' as ModuleStatus,
         }
     };
 
