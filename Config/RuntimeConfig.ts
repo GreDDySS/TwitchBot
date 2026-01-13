@@ -1,3 +1,3 @@
 export const RuntimeConfig = {
-  disableDbWrites: false
+  disableDbWrites: true
 };

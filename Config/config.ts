@@ -8,11 +8,16 @@ const configSchema = z.object({
     clientSecret: z.string(),
     accessToken: z.string(),
     refreshToken: z.string(),
-    botUsername: z.string().default("GreDDBot"),
-    botId: z.int().default(113050046),
+    botUsername: z.string(),
+    botId: z.int(),
+    owner: z.string(),
+    prefix: z.string(),
     channels: z.string().transform((str) => str.split(",").map((c) => c.trim())),
   }),
   db: z.object({
+    url: z.string(),
+  }),
+  redis: z.object({
     url: z.string(),
   }),
   telegram: z.object({
@@ -20,7 +25,7 @@ const configSchema = z.object({
     adminId: z.string(),
   }),
 });
-// Собираем и проверяем данные
+
 const env = configSchema.parse({
   twitch: {
     clientId: process.env.TWITCH_CLIENTID,
@@ -29,10 +34,15 @@ const env = configSchema.parse({
     refreshToken: process.env.TWITCH_REFRESH,
     botUsername: process.env.BOT,
     botId: parseInt(`${process.env.BOT_ID}`),
-    channels: process.env.CHANNELS || "",
+    owner: process.env.OWNER,
+    prefix: process.env.PREFIX,
+    channels: process.env.CHANNELS,
   },
   db: {
     url: process.env.DB_URI,
+  },
+  redis: {
+    url: process.env.REDIS_URL,
   },
   telegram: {
     token: process.env.TG_TOKEN,
