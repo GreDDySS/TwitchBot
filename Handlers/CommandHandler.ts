@@ -4,8 +4,15 @@ import type { ICommand, CommandCtx, UserPermission } from "../Utils/types";
 import { Logger } from "../Utils/Logger";
 import { Sender } from "../Utils/Sender";
 import { statsStore } from "../Utils/StatsStore";
+import { ChannelService } from "../Services/ChannelService";
+import config from "../Config/config"
 
 function parseArgs(text: string): string[] {
+    if (text.length > 500) {
+        Logger.warn(`[CMD] Command text too long: ${text.length} chars, truncating`);
+        text = text.slice(0, 500);
+    }
+
     const args: string[] = [];
     let current = '';
     let inQuotes = false;
@@ -22,6 +29,26 @@ function parseArgs(text: string): string[] {
     }
     if (current) args.push(current);
     return args;
+}
+
+function validateArgs(args: string[]): boolean {
+    for (const arg of args) {
+        if (arg.length > 100) {
+            Logger.warn(`[CMD] Argument too long: ${arg.length} chars`);
+            return false;
+        }
+
+        if (arg.includes('\x00')) {
+            Logger.warn(`[CMD] Argument contains null byte`);
+            return false;
+        }
+
+        if (arg.includes('<') || arg.includes('>')) {
+            Logger.warn(`[CMD] Argument contains HTML tags`);
+            return false;
+        }
+    }
+    return true;
 }
 
 export class CommandHandler {
@@ -61,7 +88,7 @@ export class CommandHandler {
     }
 
     static async handleMessage(ctx: CommandCtx) {
-        const prefix = "`"; //TODO: get DB
+        const prefix = await ChannelService.getPrefix(ctx.msg.channelId!) || config.twitch.prefix;
 
         if (!ctx.text.startsWith(prefix)) return;
 
@@ -69,6 +96,10 @@ export class CommandHandler {
         const commandName = args.shift()?.toLowerCase();
 
         if (!commandName) return;
+
+        if (!validateArgs(args)) {
+            Logger.warn(`[CMD] Invalid arguments from ${ctx.user} for command: ${commandName}`);
+        }
 
         const cmdName = this.aliases.get(commandName) || commandName;
         const command = this.commands.get(cmdName);
