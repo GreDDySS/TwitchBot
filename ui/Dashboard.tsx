@@ -20,6 +20,7 @@ const Dashboard = () => {
                 
                 <StatusRow label="Twitch IRC" status={stats.modules.Twitch} />
                 <StatusRow label="Database" status={stats.modules.Database} />
+                <StatusRow label="Redis" status={stats.modules.Redis} />
                 <StatusRow label="SevenTV" status={stats.modules.SevenTV} />
                 <StatusRow label="EventSub" status={stats.modules.EventSub} />
                 <StatusRow label="Telegram" status={stats.modules.Telegram} />
