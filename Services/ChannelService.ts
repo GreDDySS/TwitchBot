@@ -1,8 +1,9 @@
 import { prisma } from "../Database";
 import { Logger } from "../Utils/Logger";
 import type { Channel } from "../generated/prisma/client";
+import { BaseService } from "./BaseService";
 
-export class ChannelService {
+export class ChannelService extends BaseService {
     /**
      * Get all channels in alphabetical order by username
      * @returns Array of all channel object< sorted ascending by username
@@ -24,17 +25,17 @@ export class ChannelService {
      * @returns object or null if not found
      */
     static async getByName(username: string): Promise<Channel | null> {
-        if (!username || typeof username !== 'string') {
-            Logger.warn(`[ChannelService] Invalid username: ${username}`);
+        const validUsername = this.validateString(username, 'channel username');
+        if (!validUsername) {
             return null;
         }
 
         try {
             return await prisma.channel.findUnique({
-                where: { username: username.toLowerCase() },
+                where: { username: validUsername.toLowerCase() },
             });
         } catch (error) {
-            Logger.error(`[ChannelService] Channel search error ${username}`, error);
+            Logger.error(`[ChannelService] Failed to get channel by name ${validUsername}:`, error);
             return null;
         }
     };
@@ -45,17 +46,17 @@ export class ChannelService {
      * @returns Channel object or null if not found
      */
     static async getById(id: string): Promise<Channel | null> {
-         if (!id || typeof id !== 'string') {
-            Logger.warn(`[ChannelService] Invalid channel ID: ${id}`);
+        const validId = this.validateId(id, 'channel');
+        if (!validId) {
             return null;
         }
 
         try {
             return await prisma.channel.findUnique({
-                where: { id },
+                where: { id: validId },
             });
         } catch (error) {
-            Logger.error(`[ChannelService] Channel search error by ID: ${id}`, error);
+            Logger.error(`[ChannelService] Failed to get channel by ID ${validId}:`, error);
             return null;
         }
     }
@@ -68,28 +69,31 @@ export class ChannelService {
      * @throws Error if database operation fails
      */
     static async add(id: string, username: string): Promise<Channel> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
+        const validId = this.validateId(id, 'channel');
+        if (!validId) {
             throw new Error('Channel ID is required');
         }
-        if (!username || typeof username !== 'string' || username.trim().length === 0) {
+
+        const validUsername = this.validateString(username, 'channel username');
+        if (!validUsername) {
             throw new Error('Channel username is required');
         }
 
         try {
             return await prisma.channel.create({
                 data: {
-                    id,
-                    username: username.toLowerCase(),
+                    id: validId,
+                    username: validUsername.toLowerCase(),
                     joinedDate: new Date(),
                 },
             });
         } catch (error: unknown) {
-            if (error && typeof error === 'object' && 'code' in error && error.code === 'P2002') {
-                Logger.warn(`[ChannelService] Channel ${username} already exists`);
-                throw new Error(`Channel ${username} already exists`);
+            if (this.isPrismaError(error, 'P2002')) {
+                Logger.warn(`[ChannelService] Channel ${validUsername} already exists`);
+                throw new Error(`Channel ${validUsername} already exists`);
             }
 
-            Logger.error(`[ChannelService] Failed to add channel ${username} (${id}):`, error);
+            Logger.error(`[ChannelService] Failed to add channel ${validUsername} (${validId}):`, error);
             throw error;
         }
     }
@@ -100,23 +104,23 @@ export class ChannelService {
      * @returns if deletion succesful, false otherwise
      */
     static async remove(id: string): Promise<boolean> {
-        if (!id || typeof id !== 'string') {
-            Logger.warn(`[ChannelService] Invalid channel ID for removal: ${id}`);
+       const validId = this.validateId(id, 'channel');
+        if (!validId) {
             return false;
         }
 
         try {
             await prisma.channel.delete({
-                where: { id }
-            })
+                where: { id: validId }
+            });
             return true;
         } catch (error: unknown) {
-            if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
-                Logger.warn(`[ChannelService] Channel not found for removal: ${id}`);
+            if (this.isPrismaError(error, 'P2025')) {
+                Logger.warn(`[ChannelService] Channel not found for removal: ${validId}`);
                 return false;
             }
 
-            Logger.error(`[ChannelService] Failed to remove channel ${id}:`, error);
+            Logger.error(`[ChannelService] Failed to remove channel ${validId}:`, error);
             return false;
         }
     }
@@ -131,28 +135,33 @@ export class ChannelService {
      * @returns Updated channel object or null if update fails
      */
     static async updateConfig(id: string, settings: { prefix?: string, logging?: boolean, sevenTVEvents?: boolean}): Promise<Channel | null> {
-         if (!id || typeof id !== 'string') {
-            Logger.warn(`[ChannelService] Invalid channel ID for update: ${id}`);
+        const validId = this.validateId(id, 'channel');
+        if (!validId) {
             return null;
         }
 
-        if (settings.prefix !== undefined && typeof settings.prefix !== 'string') {
-            Logger.warn(`[ChannelService] Invalid prefix type: ${settings.prefix}`);
-            return null;
+        // Валидация настроек (специфичная для ChannelService)
+        if (settings.prefix !== undefined) {
+            const validPrefix = this.validateString(settings.prefix, 'prefix');
+            if (!validPrefix) {
+                Logger.warn(`[ChannelService] Invalid prefix: ${settings.prefix}`);
+                return null;
+            }
+            settings.prefix = validPrefix;
         }
 
         try {
             return await prisma.channel.update({
-                where: { id },
+                where: { id: validId },
                 data: settings,
             });
         } catch (error: unknown) {
-            if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
-                Logger.warn(`[ChannelService] Channel not found for update: ${id}`);
+            if (this.isPrismaError(error, 'P2025')) {
+                Logger.warn(`[ChannelService] Channel not found for update: ${validId}`);
                 return null;
             }
 
-            Logger.error(`[ChannelService] Failed to update channel settings ${id}:`, error);
+            Logger.error(`[ChannelService] Failed to update channel settings ${validId}:`, error);
             return null;
         }
     }
@@ -163,17 +172,18 @@ export class ChannelService {
      * @returns Boolean indicating if channel exists in database
      */
     static async isJoined(id: string): Promise<boolean> {
-        if (!id || typeof id !== 'string') {
+       const validId = this.validateId(id, 'channel');
+        if (!validId) {
             return false;
         }
 
         try {
             const count = await prisma.channel.count({
-                where: { id }
+                where: { id: validId }
             });
             return count > 0;
         } catch (error) {
-            Logger.error(`[ChannelService] Error checking if channel is joined: ${id}`, error);
+            Logger.error(`[ChannelService] Failed to check if channel is joined ${validId}:`, error);
             return false;
         }
     }
@@ -184,23 +194,41 @@ export class ChannelService {
      * @returns Channel object with included stats and announcements relations
      */
     static async getWithStats(id: string) {
-        if (!id || typeof id !== 'string') {
-            Logger.warn(`[ChannelService] Invalid channel ID for getWithStats: ${id}`);
+        const validId = this.validateId(id, 'channel');
+        if (!validId) {
             return null;
         }
 
         try {
             return await prisma.channel.findUnique({
-                where: { id },
+                where: { id: validId },
                 include: {
                     stats: true,
                     announces: true,
                 }
             });
         } catch (error) {
-            Logger.error(`[ChannelService] Error getting channel with stats: ${id}`, error);
+            Logger.error(`[ChannelService] Failed to get channel with stats ${validId}:`, error);
             return null;
         }
+    }
+
+    static async getPrefix(id: string): Promise<string | null> {
+        const validId = this.validateId(id, 'channel');
+        if (!validId) {
+            return null;
+        }
+
+        try {
+            const data = await prisma.channel.findUnique({
+                where: { id: validId },
+            })
+            return data?.prefix ?? null
+        } catch (error) {
+            Logger.error(`[ChannelService] Failed to get channel prefix ${validId}:`, error)
+            return null
+        }
+
     }
 }
 

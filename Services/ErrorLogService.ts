@@ -1,8 +1,9 @@
 import { prisma } from "../Database";
 import { Logger } from "../Utils/Logger";
 import { statsStore } from "../Utils/StatsStore";
+import { BaseService } from "./BaseService";
 
-export class ErrorLogService {
+export class ErrorLogService extends BaseService{
     /**
      * Create a new error log entry in the database
      * @param name Error type/name (e.g., "TypeError", "ValidationError")
@@ -50,25 +51,26 @@ export class ErrorLogService {
      * @returns Array of error log objects, ordered by most recent first
      */
     static async getRecent(limit: number = 50) {
-        const validLimit = Math.max(1, Math.min(limit, 500));
+        const validLimit = this.clampNumber(limit, 1, 500, 50);
+
         if (limit !== validLimit) {
             Logger.warn(`[ErrorLogService] Limit ${limit} adjusted to ${validLimit}`);
         }
-        
+
         try {
             return await prisma.logError.findMany({
                 orderBy: { date: 'desc' },
                 take: validLimit,
                 select: {
-                id: true,
-                name: true,
-                message: true,
-                stack: true,
-                date: true,
+                    id: true,
+                    name: true,
+                    message: true,
+                    stack: true,
+                    date: true,
                 },
             });
         } catch (error) {
-            console.error('[ErrorLogService] Error receiving error logs', error);
+            Logger.error('[ErrorLogService] Failed to get recent error logs:', error);
             return [];
         }
     }

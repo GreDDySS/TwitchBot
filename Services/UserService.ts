@@ -1,8 +1,9 @@
 import { prisma } from "../Database";
 import { Logger } from "../Utils/Logger";
+import { BaseService } from "./BaseService";
 import type { User } from "../generated/prisma/client";
 
-export class UserService {
+export class UserService extends BaseService{
 
     /**
      * Get user by ID
@@ -10,17 +11,15 @@ export class UserService {
      * @returns User or null if not found
      */
     static async getUserById(id: string): Promise<User | null> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
-            Logger.warn(`[UserService] Invalid user ID provided: ${id}`);
-            return null;
-        }
+        const validId = this.validateId(id, 'user')
+        if (!validId) return null;
 
         try {
             return await prisma.user.findUnique({
-                where: { id },
+                where: { id: validId },
             });
         } catch (error) {
-            Logger.error(`[UserService] Failed to get user by ID ${id}:`, error);
+            Logger.error(`[UserService] Failed to get user by ID ${validId}:`, error);
             return null;
         }
     }
@@ -31,17 +30,17 @@ export class UserService {
      * @returns User object or null if not found
      */
     static async getUserByName(username: string): Promise<User | null> {
-        if (!username || typeof username !== 'string') {
-            Logger.warn(`[UserService] Invalid username provided: ${username}`);
+        const validUsername = this.validateString(username, 'username');
+        if (!validUsername) {
             return null;
         }
 
         try {
             return await prisma.user.findFirst({
-                where: { username: username.toLowerCase() },
+                where: { username: validUsername.toLowerCase() },
             });
         } catch (error) {
-            Logger.error(`[UserService] Failed to get user by name ${username}: `, error);
+            Logger.error(`[UserService] Failed to get user by name ${validUsername}: `, error);
             return null;
         }
     }
@@ -56,15 +55,15 @@ export class UserService {
      * @throws Error if database operation fails
      */
     static async createOrUpdate(id: string, username: string, displayName: string, color?: string): Promise<User> {
-        if (!id || typeof id !== 'string' || id.trim().length === 0) {
-            throw new Error('User ID is required');
-        }
-        if (!username || typeof username !== 'string' || username.trim().length === 0) {
-            throw new Error('Username is required');
-        }
-        if (!displayName || typeof displayName !== 'string' || displayName.trim().length === 0) {
-            throw new Error('Display name is required');
-        }
+        const validId = this.validateId(id, 'user');
+        if (!validId) throw new Error('User ID is required');
+
+        const validUsername = this.validateString(username, 'username');
+        if (!validUsername) throw new Error('Username is required');
+
+        const validDisplayName = this.validateString(displayName, 'displayName');
+        if (!validDisplayName) throw new Error('Display name is required');
+
         if (color && !/^#[0-9A-F]{6}$/i.test(color)) {
             Logger.warn(`[UserService] Invalid color format: ${color}, using default`);
             color = undefined;
@@ -72,21 +71,21 @@ export class UserService {
 
         try {
             return await prisma.user.upsert({
-                where: { id },
+                where: { id: validId },
                 update: {
-                    username: username.toLowerCase(),
-                    displayName,
+                    username: validUsername,
+                    displayName: validDisplayName,
                     ...(color && { color })
                 },
                 create: {
                     id,
-                    username: username.toLowerCase(),
-                    displayName,
+                    username: validUsername,
+                    displayName: validDisplayName,
                     color: color ?? "#FFFFFF",
                 }
             });
         } catch (error) {
-            Logger.error(`[UserService] Failed to upsert user ${username} (${id}): `, error);
+            Logger.error(`[UserService] Failed to upsert user ${validUsername} (${validId}): `, error);
             throw error;
         }
     }
@@ -97,22 +96,22 @@ export class UserService {
      * @returns true if successful, false if the user is not found or an error occurs
     */
     static async incrementUserMessage(id: string): Promise<boolean> {
-        if (!id || typeof id !== 'string') {
-            Logger.warn(`[UserService] Invalid user ID for increment: ${id}`);
+        const validId = this.validateId(id, 'user');
+        if (!validId) {
             return false;
         }
 
         try {
             await prisma.user.update({
-                where: { id },
+                where: { id: validId },
                 data: {
                     messages: { increment: 1 }
                 }
             });
             return true;
         } catch (error: unknown) {
-            if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
-                Logger.warn(`[UserService] User not found for increment: ${id}`);
+            if (this.isPrismaError(error, 'P2025')) {
+                Logger.warn(`[UserService] User not found for increment: ${validId}`);
                 return false;
             }
 
@@ -127,7 +126,7 @@ export class UserService {
      * @returns Array of top users ordered by message count (descending)
      */
     static async getTopUsers(limit: number) {
-        const validLimit = Math.max(1, Math.min(limit, 100));
+        const validLimit = this.clampNumber(limit, 1, 100, 10);
 
         if (limit !== validLimit) {
             Logger.warn(`[UserService] Limit ${limit} adjusted to ${validLimit}`);
@@ -142,5 +141,11 @@ export class UserService {
             Logger.error(`[UserService] Failed to get top users: `, error);
             return [];
         }
+    }
+    
+    static async createOrUpdateWithMessage(id: string, username: string, displayName: string, color?: string): Promise<User> {
+        const user = await this.createOrUpdate(id, username, displayName, color);
+        await this.incrementUserMessage(id);
+        return user;
     }
 }

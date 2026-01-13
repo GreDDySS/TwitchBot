@@ -1,8 +1,9 @@
 import { prisma } from "../Database";
 import { Logger } from "../Utils/Logger";
 import { statsStore } from "../Utils/StatsStore";
+import { BaseService } from "./BaseService";
 
-export class MessageLogService {
+export class MessageLogService extends BaseService{
     /**
      * Log a chat message to the database
      * @param text The message content
@@ -12,39 +13,44 @@ export class MessageLogService {
      * @param color User's chat color
      */
     static async create(text: string, channelId: string, userId: string, badges: string[], color: string): Promise<void> {
-        if (!text || typeof text !== 'string') {
-            Logger.warn(`[MessageLogService] Invalid text for message log`);
+        const validText = this.validateString(text, 'message text');
+        if (!validText) {
             return;
         }
-        if (!channelId || typeof channelId !== 'string') {
-            Logger.warn(`[MessageLogService] Invalid channelId for message log`);
+
+        const validChannelId = this.validateId(channelId, 'channel');
+        if (!validChannelId) {
             return;
         }
-        if (!userId || typeof userId !== 'string') {
-            Logger.warn(`[MessageLogService] Invalid userId for message log`);
+
+        const validUserId = this.validateId(userId, 'user');
+        if (!validUserId) {
             return;
         }
+
         if (!Array.isArray(badges)) {
-            Logger.warn(`[MessageLogService] Invalid badges array for message log`);
+            Logger.warn(`[MessageLogService] Invalid badges array`);
             return;
         }
 
         try {
             await prisma.messageLog.create({
                 data: {
-                    text,
-                    channelId,
-                    userId,
+                    text: validText,
+                    channelId: validChannelId,
+                    userId: validUserId,
                     badges,
-                    color,
+                    color: color || null,
                     createdAt: new Date(),
                 }
-            })
+            });
+
             statsStore.incrementDbQuery();
-
-
         } catch (error) {
-            Logger.error(`[MessageLogService] Failed to log message from ${userId}:${channelId}`, error);
+            Logger.error(
+                `[MessageLogService] Failed to log message from ${validUserId}:${validChannelId}`, 
+                error
+            );
             statsStore.incrementError();
         }
     }
