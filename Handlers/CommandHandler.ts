@@ -80,9 +80,9 @@ export class CommandHandler {
                         this.aliases.set(alias.toLowerCase(), command.name.toLowerCase());
                     }
                 }
+                statsStore.incrementCommandLoad();
             }
 
-            statsStore.setLoadedCommandsCount(this.commands.size)
         } catch (err: any) {
             Logger.error(`[CMD] Error loading commands: ${err}`);
         }
@@ -96,7 +96,7 @@ export class CommandHandler {
                 return true;
             }
 
-            await redis.setex(key, cooldownSeconds, 1);
+            await redis.setex(key, cooldownSeconds, "1");
             return false;
         } catch (err) {
             Logger.warn("[CMD] Redis error, using fallback for cooldown:", err);
