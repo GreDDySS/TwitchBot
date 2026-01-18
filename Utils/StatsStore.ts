@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { MessageQueueService } from "../Services/MessageQueueService";
 
 export type ModuleStatus = 'online' | 'offline' | 'error' | 'loading';
 
@@ -6,6 +7,10 @@ class StatsStore extends EventEmitter {
     private startTime: number = Date.now();
     private uniqueUsers = new Set<string>();
     private uptimeInterval?: ReturnType<typeof setInterval>;
+    private systemStatsInterval?: ReturnType<typeof setInterval>;
+
+    private messagesLastMinute: number[] = [];
+    private commandsLastMinute: number[] = [];
 
     private stats = {
         messages: 0,
@@ -17,6 +22,14 @@ class StatsStore extends EventEmitter {
         redisQueries: 0,
         errors: 0,
         uniqueUsersCount: 0,
+        messagesPerSecond: 0,
+        commandsPerMinute: 0,
+        memoryUsage: {
+            heapUsed: 0,
+            heapTotal: 0,
+            rss: 0,
+            external: 0,
+        },
         modules: {
             Twitch: 'loading' as ModuleStatus,
             Database: 'loading' as ModuleStatus,
@@ -30,12 +43,17 @@ class StatsStore extends EventEmitter {
     constructor() {
         super();
         this.uptimeInterval = setInterval(() => this.updateUptime(), 1000);
+        this.systemStatsInterval = setInterval(() => this.updateSystemStats(), 2000);
     }
 
     destroy() {
         if (this.uptimeInterval) {
             clearInterval(this.uptimeInterval);
             this.uptimeInterval = undefined;
+        }
+        if (this.systemStatsInterval) {
+            clearInterval(this.systemStatsInterval);
+            this.systemStatsInterval = undefined;
         }
     }
 
@@ -45,7 +63,12 @@ class StatsStore extends EventEmitter {
     }
 
     incrementCommandUsage() {
-        this.stats.commands++
+        this.stats.commands++;
+        this.emitChange();
+    }
+    
+    incrementCommandLoad() {
+        this.stats.commandsLoaded++;
         this.emitChange();
     }
 
@@ -92,6 +115,26 @@ class StatsStore extends EventEmitter {
 
     private emitChange() {
         this.emit("change", { ...this.stats });
+    }
+
+    private async updateSystemStats() {
+
+        const memUsage = process.memoryUsage();
+        this.stats.memoryUsage = {
+            heapUsed: Math.round(memUsage.heapUsed / 1024 / 1024),
+            heapTotal: Math.round(memUsage.heapTotal / 1024 / 1024),
+            rss: Math.round(memUsage.rss / 1024 / 1024),
+            external: Math.round(memUsage.external / 1024 / 1024),
+        };
+
+        const oneMinuteAgo = Date.now() - 60000;
+        this.messagesLastMinute = this.messagesLastMinute.filter(t => t > oneMinuteAgo);
+        this.stats.messagesPerSecond = Math.round((this.messagesLastMinute.length / 60) * 10) / 10;
+
+        this.commandsLastMinute = this.commandsLastMinute.filter(t => t > oneMinuteAgo);
+        this.stats.commandsPerMinute = this.commandsLastMinute.length;
+
+        this.emitChange();
     }
 
     getStats() {

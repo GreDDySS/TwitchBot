@@ -12,10 +12,12 @@ const Dashboard = () => {
 		return () => { statsStore.off('change', update); };
 	}, []);
 
+	const formatMemory = (mb: number) => `${mb} MB`;
+
 	return (
         <Box flexDirection="row" gap={2} padding={1}>
-            {/* left collumn */}
-            <Box flexDirection="column" borderStyle="round" borderColor="blue" paddingX={1} width={25}>
+            {/* left column */}
+            <Box flexDirection="column" borderStyle="round" borderColor="blue" paddingX={1} width={30}>
                 <Text bold underline>System Status</Text>
                 
                 <StatusRow label="Twitch IRC" status={stats.modules.Twitch} />
@@ -29,25 +31,44 @@ const Dashboard = () => {
                     <Text dimColor>Uptime: </Text>
                     <Text bold color="cyan">{stats.uptime}</Text>
                 </Box>
+
+                {/* System Resources */}
+                <Box marginTop={1} borderStyle="single" borderColor="gray" paddingX={1}>
+                    <Text bold underline>Resources</Text>
+                    <Text dimColor>RAM: </Text>
+                    <Text color="yellow">{formatMemory(stats.memoryUsage.rss)}</Text>
+                    <Text dimColor>Heap: </Text>
+                    <Text color="yellow">{formatMemory(stats.memoryUsage.heapUsed)}/{formatMemory(stats.memoryUsage.heapTotal)}</Text>
+                </Box>
             </Box>
+
             {/* right column */}
             <Box flexDirection="column" flexGrow={1}>
-                {/* collumn 1 */}
+                {/* row 1 */}
                 <Box flexDirection="row" gap={1} marginBottom={1}>
                     <MetricBox label="Messages" value={stats.messages} color="green" />
-                    <MetricBox label="Unique Users" value={stats.uniqueUsersCount} color="magenta" />
-                    <MetricBox label="Commands" value={stats.commands} color="yellow" />
+                    <MetricBox label="Msg/sec" value={stats.messagesPerSecond} color="green" />
+                     <MetricBox label="Cmd/min" value={stats.commandsPerMinute} color="yellow" />
                 </Box>
                 
-                {/* collumn 2 */}
+                {/* row 2 */}
                 <Box flexDirection="row" gap={1} marginBottom={1}>
+                    <MetricBox label="Commands" value={stats.commands} color="yellow" />
                     <MetricBox label="Channels" value={stats.channels} color="cyan" />
-                    <MetricBox label="DB Queries" value={stats.dbQueries} color="blue" />
                     <MetricBox label="Errors" value={stats.errors} color="red" />
                 </Box>
                 
-                <Box marginTop={1}>
-                    <Text dimColor>Loaded Commands: {stats.commandsLoaded}</Text>
+                {/* row 3 */}
+                <Box flexDirection="row" gap={1} marginBottom={1}>
+                    
+                    <MetricBox label="DB Queries" value={stats.dbQueries} color="blue" />
+                    <MetricBox label="Redis Q" value={stats.redisQueries} color="red" />
+                </Box>
+
+                {/* row 4 */}
+                <Box flexDirection="row" gap={1} marginBottom={1}>
+                    
+                    <MetricBox label="Commands Loaded" value={stats.commandsLoaded} color="blue" />
                 </Box>
             </Box>
         </Box>
