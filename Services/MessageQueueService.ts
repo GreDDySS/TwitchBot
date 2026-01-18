@@ -90,7 +90,7 @@ export class MessageQueueService {
 
     static start(): void {
         if (this.flushInterval) {
-            return; // Уже запущено
+            return;
         }
 
         this.flushInterval = setInterval(() => {
