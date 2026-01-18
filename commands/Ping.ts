@@ -10,6 +10,6 @@ export default {
     async execute({send, reply, user, text, args, msg}) {
         const stats = await statsStore.getStats()
         
-        await send(`@${user}, PONG! · Uptime: ${stats["uptime"]} · Messages: ${stats["messages"]} · Cmd: ${stats["commands"]} · Channels: ${stats["channels"]}`)
+        await send(`@${user}, PONG! · Uptime: ${stats["uptime"]} · RAM: ${stats["memoryUsage"]["heapUsed"]}MB · Messages: ${stats["messages"]} · Cmd: ${stats["commands"]} · Channels: ${stats["channels"]} · DB Querys ${stats["dbQueries"]} · Redis: ${stats["redisQueries"]}`)
     }
 } as ICommand
